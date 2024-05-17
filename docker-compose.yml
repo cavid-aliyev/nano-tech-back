@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    # volumes:
+    #     - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_USER: root
+      POSTGRES_DB: nanotech
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+
+# volumes:
+#   postgres_data: 
