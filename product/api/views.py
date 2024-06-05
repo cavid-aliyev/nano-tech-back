@@ -73,8 +73,8 @@ def purchase_product(request, slug):
     product.save()
     return Response({'message': 'Purchase successful'})
 
-@api_view(['GET'])
-def top_sales_products(request):
-    top_products = ProductVersion.objects.order_by('-sales')[:10]
-    serializer = ProductVersionListSerializer(top_products, many=True)
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def top_sales_products(request):
+#     top_products = ProductVersion.objects.order_by('-sales')[:10]
+#     serializer = ProductVersionListSerializer(top_products, many=True)
+#     return Response(serializer.data)
