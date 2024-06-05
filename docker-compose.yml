@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: nano-tech-postgres
+    image: postgres:latest
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
+    env_file:
+      - .env
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
