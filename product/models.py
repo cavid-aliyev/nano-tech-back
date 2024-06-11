@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models.fields.files import ImageField
-from django.contrib.auth import get_user_model
 from django.utils.text import slugify
-User = get_user_model()
+
+
 
 
 class Brand(models.Model):
@@ -91,6 +91,7 @@ class ProductVersion(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=10)
     discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
     stock = models.IntegerField()
+    sales = models.PositiveIntegerField(default=0)
     tags = models.ManyToManyField(ProductTag, blank=True, related_name='product_tags')
     description = models.TextField(blank=True)
     cover_image = ImageField(upload_to='product_version_image')
