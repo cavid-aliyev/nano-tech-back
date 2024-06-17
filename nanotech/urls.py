@@ -44,8 +44,10 @@ urlpatterns = [
     path('language_options/', get_language_options_api, name='get_language_options_api'),
 
     # path('api/', include('product.api.urls')),
+
     path('api/account/', include('account.api.urls')),
     # path('api/account/', include('allauth.urls')),
+    # path('social-auth/', include('social_django.urls', namespace='social')),
 
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("blog/", include("blog.urls.apis")),

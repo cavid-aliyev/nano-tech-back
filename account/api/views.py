@@ -51,7 +51,7 @@ class OTPVerificationView(APIView):
 
         # Send email
         subject = 'Account Activated'
-        message = 'Your account has been activated successfully.'
+        message = 'Your Nanotech account has been activated successfully.'
         from_email = 'your_email@example.com'
         recipient_list = [user.email]
         
