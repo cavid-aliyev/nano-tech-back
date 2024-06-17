@@ -1,8 +1,23 @@
 from django.db import models
 from django.db.models.fields.files import ImageField
 from django.utils.text import slugify
+# from django.utils.translation import gettext_lazy as _
 
 
+from utils import DateAbstractModel
+
+
+class Slider(DateAbstractModel):
+    slider_image = ImageField(upload_to='slider_image')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.id}'s slider obj"
+
+    class Meta:
+        verbose_name = "Slider"
+        verbose_name_plural = "Slider"
+        ordering = ["id"]
 
 
 class Brand(models.Model):

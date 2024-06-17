@@ -3,6 +3,7 @@ import certifi
 import os
 from datetime import timedelta
 from dotenv import load_dotenv
+from django.utils.translation import gettext_lazy as _
 
 load_dotenv()  # Load environment variables from a .env file
 
@@ -16,13 +17,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+# DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ["*"]
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
+    "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,19 +36,28 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'product',
+    "blog.apps.BlogConfig",
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'rest_framework_simplejwt',
-    'product',
+    "corsheaders",
+    'ckeditor',
+    'django_ckeditor_5',
+    "drf_spectacular",
+    "rosetta",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",   # corsheaders
     'django.middleware.common.CommonMiddleware',
+    "django.middleware.locale.LocaleMiddleware", # for translating
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -58,6 +73,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
 
 TEMPLATES = [
     {
@@ -78,10 +94,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nanotech.wsgi.application'
 
 # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        # "HOST": os.getenv("POSTGRES_HOST"),
+        "HOST": '127.0.0.1',
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
 
@@ -104,16 +132,42 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'auth.User'
 
 # Internationalization
-LANGUAGE_CODE = 'en-us'
+# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+
+LANGUAGES = [
+    ('az', 'Azerbaijan'),
+    ('en', 'English'),
+    ('ru', 'Russian')
+]
+
+lang = True
+
+TIME_ZONE = "Asia/Baku"
+
+prefix_default_language=True
 
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
+LANGUAGE_SESSION_KEY = 'django_language'  # Default is 'django_language'
+# LANGUAGE_SESSION_KEY = '_language'
+
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -125,8 +179,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.DjangoModelPermissions',
+        # 'rest_framework.permissions.AllowAny',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
 
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
@@ -187,3 +244,45 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 os.environ["SSL_CERT_FILE"] = certifi.where()
+
+
+# CORS HEADERS config
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
+CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Api System",
+    "DESCRIPTION": "Test",
+    "VERSION": "1.0",
+    "SCHEMA_PATH_FUNC": "main.views.schema_view",
+    "COMPONENT_SPLIT_REQUEST": True,
+}
+

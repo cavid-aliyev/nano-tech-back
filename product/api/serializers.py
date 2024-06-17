@@ -1,6 +1,12 @@
 from rest_framework import serializers
-from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Discount
+from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Discount, Slider
 from decimal import Decimal
+
+
+class SliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slider
+        fields = '__all__'
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -45,7 +51,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVersion
-        fields = ['slug', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price']
+        fields = ['slug', 'title','description', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
