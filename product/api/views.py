@@ -1,9 +1,11 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Slider
 from .serializers import BrandSerializer, ProductTagSerializer, ProductCategorySerializer, ProductSubcategorySerializer, ProductColorSerializer, ProductVersionListSerializer, ProductVersionImageSerializer, SliderSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -125,6 +127,14 @@ class ProductColorViewSet(viewsets.ModelViewSet):
 class ProductVersionViewSet(viewsets.ModelViewSet):
     queryset = ProductVersion.objects.all()
     serializer_class = ProductVersionListSerializer
+
+    # filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    # filterset_fields = ['title', 'description']
+    # search_fields = ['title', 'subcategory__title', 'brand__title', 'description']   # ?search=new
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'description']
+
 
 class ProductVersionImageViewSet(viewsets.ModelViewSet):
     queryset = ProductVersionImage.objects.all()

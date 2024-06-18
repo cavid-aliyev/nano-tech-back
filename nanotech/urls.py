@@ -40,7 +40,7 @@ schema_view = get_schema_view(
 app_name="api"
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('set_language/', set_language_api, name='set_language_api'),
+    # path('set_language/', set_language_api, name='set_language_api'),
     path('language_options/', get_language_options_api, name='get_language_options_api'),
 
     # path('api/', include('product.api.urls')),
@@ -51,6 +51,8 @@ urlpatterns = [
 
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("blog/", include("blog.urls.apis")),
+    path("social-media-api/", include("social_media.api.urls")),
+    path("cart-api/", include('wish_cart.api.urls')),
 
     # re_path(r'^rosetta/', include('rosetta.urls')),
     

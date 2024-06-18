@@ -48,10 +48,14 @@ class DiscountSerializer(serializers.ModelSerializer):
 class ProductVersionListSerializer(serializers.ModelSerializer):
     discount = DiscountSerializer(required=False)
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    # color = serializers.CharField(source = 'color.title')
+    # size = serializers.CharField(source = 'size.title')
+    # brand = serializers.CharField(source = 'brand.title')
+    # subcategory = serializers.CharField(source = 'subcategory.title')
 
     class Meta:
         model = ProductVersion
-        fields = ['slug', 'title','description', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price']
+        fields = ['slug', 'title','description','brand','subcategory', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price', 'cover_image']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -70,6 +74,8 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
             data['discounted_price'] = price
 
         return data
+    
+
 class ProductVersionImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVersionImage

@@ -28,7 +28,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'modeltranslation',
-    "jazzmin",
+    # "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'product',
     "blog.apps.BlogConfig",
+    "social_media.apps.SocialMediaConfig",
+    "wish_cart",
     "account",
     "social_django",
 
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.google',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
     "corsheaders",
     'ckeditor',
     'django_ckeditor_5',
@@ -185,8 +188,9 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-}
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 
+}
 
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
