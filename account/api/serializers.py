@@ -1,13 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate,get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator as token_generator
-
 import random
-
-
 
 User = get_user_model()
 
@@ -114,7 +111,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError("Invalid token or user ID")
-        
+
         if not token_generator.check_token(user, data['token']):
             raise serializers.ValidationError("Invalid token")
 

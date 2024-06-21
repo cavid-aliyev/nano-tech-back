@@ -23,6 +23,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,12 +32,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'allauth',
-    'allauth.account',
+    # 'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'rest_framework_simplejwt',
+    'account',
     'product',
+    'checkout',
+   
 ]
 
 MIDDLEWARE = [
@@ -101,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

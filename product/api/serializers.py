@@ -68,3 +68,4 @@ class ProductVersionImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVersionImage
         fields = '__all__'
+

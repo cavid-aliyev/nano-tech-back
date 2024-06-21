@@ -3,25 +3,27 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
-    RegisterSerializer, UserSerializer, LoginSerializer, 
-    OTPVerificationSerializer, PasswordResetRequestSerializer, 
+    RegisterSerializer, UserSerializer, LoginSerializer,
+    OTPVerificationSerializer, PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer
 )
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
+from checkout.models import ShoppingCart
 
 User = get_user_model()
-
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        ShoppingCart.objects.create(user=user)
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
@@ -54,11 +56,10 @@ class OTPVerificationView(APIView):
         message = 'Your account has been activated successfully.'
         from_email = 'your_email@example.com'
         recipient_list = [user.email]
-        
+
         send_mail(subject, message, from_email, recipient_list)
 
         return Response({"detail": "Account activated successfully"}, status=status.HTTP_200_OK)
-
 
 class PasswordResetRequestView(APIView):
     permission_classes = [permissions.AllowAny]

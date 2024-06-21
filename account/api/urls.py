@@ -2,7 +2,7 @@ from django.urls import path
 from account.api.views import RegisterView, UserDetailView, LogoutView, LoginView,OTPVerificationView, PasswordResetRequestView, PasswordResetConfirmView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-app_name = 'account'
+# app_name = 'account'
 
 urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

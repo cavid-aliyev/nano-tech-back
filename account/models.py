@@ -24,6 +24,7 @@ class CustomUser(AbstractUser):
     address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
     position = models.CharField(max_length=100, blank=True,default='mudur')
+    otp = models.CharField(max_length=6, blank=True, null=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email'] 
