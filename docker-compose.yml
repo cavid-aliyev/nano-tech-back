@@ -29,6 +29,14 @@ services:
     env_file:
       - .env
 
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    
+
 
 volumes:
   postgres_data:
