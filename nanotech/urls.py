@@ -41,9 +41,9 @@ app_name="api"
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('set_language/', set_language_api, name='set_language_api'),
-    path('language_options/', get_language_options_api, name='get_language_options_api'),
+    # path('language_options/', get_language_options_api, name='get_language_options_api'),
 
-    # path('api/', include('product.api.urls')),
+    path('api/', include('product.api.urls')),
 
     path('api/account/', include('account.api.urls')),
     # path('api/account/', include('allauth.urls')),
@@ -71,6 +71,6 @@ urlpatterns += i18n_patterns(
     path('i18n/', include('django.conf.urls.i18n')),
     # path('i18n/', include('django_translation_flags.urls')),
 
-    path('api/', include('product.api.urls')),
+    # path('api/', include('product.api.urls')),
 
 )

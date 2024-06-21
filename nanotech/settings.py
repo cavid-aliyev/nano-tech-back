@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'django_ckeditor_5',
     "drf_spectacular",
-    "rosetta",
+    # "rosetta",
 ]
 
 MIDDLEWARE = [
@@ -84,7 +84,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,8 +113,8 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        # "HOST": os.getenv("POSTGRES_HOST"),
-        "HOST": '127.0.0.1',
+        "HOST": os.getenv("POSTGRES_HOST"),
+        # "HOST": '127.0.0.1',
         "PORT": os.getenv("POSTGRES_PORT"),
     }
 }

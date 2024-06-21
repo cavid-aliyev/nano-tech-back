@@ -6,7 +6,7 @@ services:
     image: postgres:latest
     restart: always
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     env_file:
@@ -17,3 +17,18 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  web:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8002:8002"
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+
+volumes:
+  postgres_data:
