@@ -55,7 +55,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVersion
-        fields = ['slug', 'title','description','brand','subcategory', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price', 'cover_image']
+        fields = ['id','slug', 'title','description','brand','subcategory', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price', 'cover_image']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

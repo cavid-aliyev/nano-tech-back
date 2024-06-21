@@ -95,6 +95,7 @@ def get_language_options_api(request):
     return JsonResponse({'languages': languages_info})
 
 
+@permission_classes([IsAuthenticatedOrReadOnly])
 class SliderViewSet(viewsets.ModelViewSet):
     queryset = Slider.objects.all()
     serializer_class = SliderSerializer

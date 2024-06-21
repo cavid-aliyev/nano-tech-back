@@ -1,14 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate,get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator as token_generator
-from typing import Any
-
 import random
-
-
 
 User = get_user_model()
 
@@ -26,24 +22,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user_otp = str(random.randint(100000, 999999))
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            is_active=False,
-            otp=user_otp
+            is_active=False
         )
+        user.otp = str(random.randint(100000, 999999))
         user.save()
         # Send OTP via email
         subject = 'Your account activation code'
         message = f'Your activation code is {user.otp}'
         user.email_user(subject, message)
-        print(user.otp, "userotppp")
         return user
-    
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -59,7 +53,6 @@ class LoginSerializer(serializers.Serializer):
 
         if username and password:
             user = authenticate(username=username, password=password)
-            print(user)
             if user is None:
                 raise serializers.ValidationError("Invalid credentials")
             if not user.is_active:
@@ -85,16 +78,9 @@ class OTPVerificationSerializer(serializers.Serializer):
     def validate(self, data):
         username = data.get('username')
         otp = data.get('otp')
-        print(username, otp)
-
-        user = User.objects.get(username=username)
-        if user:
-            print(user.username, user.otp)
-            if user.otp == otp:
-                print(user, "user hereeeeee-------")
-            else:
-                raise serializers.ValidationError("Invalid OTP")
-        else:
+        try:
+            user = User.objects.get(username=username, otp=otp)
+        except User.DoesNotExist:
             raise serializers.ValidationError("Invalid OTP or username")
         return data
 
@@ -125,7 +111,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError("Invalid token or user ID")
-        
+
         if not token_generator.check_token(user, data['token']):
             raise serializers.ValidationError("Invalid token")
 

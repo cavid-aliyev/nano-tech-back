@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,  IsAuthenticatedOrReadOnly,AllowAny
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,8 +8,61 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.models import Session
 from drf_spectacular.utils import extend_schema
 
-from wish_cart.models import WishlistItem
-from wish_cart.api.serializers import WishlistItemCreateSerializer, WishlistItemListSerializer
+from checkout.models import WishlistItem, ShoppingCart,CartItem
+from checkout.api.serializers import WishlistItemCreateSerializer, WishlistItemListSerializer
+
+from .serializers import ShoppingCartSerializer,CartItemCreateSerializer,CartItemReadSerializer,CartItemDeleteSerializer
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from product.models import ProductVersion
+
+
+
+@permission_classes([IsAuthenticatedOrReadOnly])
+class ShoppingCartAPIView(ListCreateAPIView):
+
+    serializer_class = ShoppingCartSerializer
+    queryset = ShoppingCart.objects.all()
+    # permission_classes = (IsAuthenticatedOrReadOnly)
+
+
+@permission_classes([IsAuthenticated])
+class CartItemCreateAPIView(ListCreateAPIView):
+    serializer_class = CartItemReadSerializer
+    queryset = CartItem.objects.all()
+    # permission_classes = (IsAuthenticated,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CartItemCreateSerializer
+        return super().get_serializer_class()
+
+    def create(self, request, *args, **kwargs):
+
+        print(self.request.user)
+        cart = ShoppingCart.objects.get(user=self.request.user)
+        print(cart.get_total)
+        
+
+        request.data["cart"] = cart.id
+        
+        return super().create(request, *args, **kwargs)
+
+
+@permission_classes([IsAuthenticated])
+class CartItemDeleteAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CartItemDeleteSerializer
+    queryset = CartItem.objects.all()
+    # permission_classes = (IsAuthenticated,)
+
+    def update(self, request, *args, **kwargs):
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+
+        return super().destroy(request, *args, **kwargs)
+
+
 
 
 @extend_schema(

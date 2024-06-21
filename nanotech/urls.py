@@ -52,7 +52,7 @@ urlpatterns = [
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("blog/", include("blog.urls.apis")),
     path("social-media-api/", include("social_media.api.urls")),
-    path("cart-api/", include('wish_cart.api.urls')),
+    path("cart-api/", include('checkout.api.urls')),
 
     # re_path(r'^rosetta/', include('rosetta.urls')),
     
