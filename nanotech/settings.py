@@ -142,25 +142,25 @@ AUTH_USER_MODEL = 'account.CustomUser'
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
 
 LANGUAGES = [
-    ('az', 'Azerbaijan'),
     ('en', 'English'),
+    ('az', 'Azerbaijan'),
     ('ru', 'Russian')
 ]
 
-lang = True
+# lang = True
 
 TIME_ZONE = "Asia/Baku"
 
-prefix_default_language=True
+# prefix_default_language=True
 
 USE_I18N = True
-USE_L10N = True
+# USE_L10N = True
 USE_TZ = True
 
-LANGUAGE_SESSION_KEY = 'django_language'  # Default is 'django_language'
+# LANGUAGE_SESSION_KEY = 'django_language'  # Default is 'django_language'
 # LANGUAGE_SESSION_KEY = '_language'
 
 

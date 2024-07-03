@@ -1,5 +1,5 @@
 from modeltranslation.translator import translator, TranslationOptions, register
-from product.models import Brand, ProductCategory, ProductSubcategory, ProductVersion
+from product.models import Brand, ProductCategory, ProductSubcategory, ProductVersion, ProductColor, ProductTag, ProductSize
 
 
 @register(Brand)
@@ -12,6 +12,19 @@ class ProductCategoryTranslationOptions(TranslationOptions):
 
 @register(ProductSubcategory)
 class ProductSubcategoryTranslationOptions(TranslationOptions):
+    fields = ('title',)
+
+
+@register(ProductColor)
+class ProductColorTranslationOptions(TranslationOptions):
+    fields = ('title',)
+
+@register(ProductTag)  
+class ProductTagTranslationOptions(TranslationOptions):
+    fields = ('title',)
+
+@register(ProductSize)
+class ProductSizeTranslationOptions(TranslationOptions):
     fields = ('title',)
 
 

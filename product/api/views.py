@@ -101,18 +101,24 @@ class SliderViewSet(viewsets.ModelViewSet):
     serializer_class = SliderSerializer
 
 
+@permission_classes([IsAuthenticatedOrReadOnly])
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductTagViewSet(viewsets.ModelViewSet):
     queryset = ProductTag.objects.all()
     serializer_class = ProductTagSerializer
 
+
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategorySerializer
 
+
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductSubcategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductSubcategory.objects.all()
     serializer_class = ProductSubcategorySerializer
@@ -121,10 +127,13 @@ class ProductSubcategoryViewSet(viewsets.ModelViewSet):
 #     queryset = Product.objects.all()
 #     serializer_class = ProductSerializer
 
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductColorViewSet(viewsets.ModelViewSet):
     queryset = ProductColor.objects.all()
     serializer_class = ProductColorSerializer
 
+
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductVersionViewSet(viewsets.ModelViewSet):
     queryset = ProductVersion.objects.all()
     serializer_class = ProductVersionListSerializer
@@ -159,6 +168,7 @@ def product_detail(request, slug):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 def purchase_product(request, slug):
     try:
@@ -175,6 +185,7 @@ def purchase_product(request, slug):
     product.sales += 1
     product.save()
     return Response({'message': 'Purchase successful'})
+
 
 @api_view(['GET'])
 def top_sales_products(request):
