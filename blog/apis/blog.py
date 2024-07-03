@@ -1,13 +1,14 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from blog.models import Blog
 from blog.serializers import BlogSerializer, ChangeBlogSerializer
 
 
 class BlogApiView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     @extend_schema(
         request=BlogSerializer,
         responses={

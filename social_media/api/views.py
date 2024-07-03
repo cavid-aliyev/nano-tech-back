@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import status
 
 from .serializers import InstagramSerializer, FacebookSerializer, WhatsappSerializer, TelegramSerializer, TiktokSerializer
@@ -10,6 +11,7 @@ from social_media.models import InstagramProfile, FacebookProfile, WhatsappProfi
 
 class InstagramApiView(APIView):
     serializer_class = InstagramSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=InstagramSerializer,
@@ -44,6 +46,7 @@ class InstagramApiView(APIView):
     
 class FacebookApiView(APIView):
     serializer_class = FacebookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=FacebookSerializer,
@@ -78,6 +81,7 @@ class FacebookApiView(APIView):
     
 class WhatsappApiView(APIView):
     serializer_class = WhatsappSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=WhatsappSerializer,
@@ -112,6 +116,7 @@ class WhatsappApiView(APIView):
     
 class TelegramApiView(APIView):
     serializer_class = TelegramSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=TelegramSerializer,
@@ -146,6 +151,7 @@ class TelegramApiView(APIView):
     
 class TiktokApiView(APIView):
     serializer_class = TiktokSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=TiktokSerializer,

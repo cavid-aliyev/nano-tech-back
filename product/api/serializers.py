@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Discount, Slider
+from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductSize, ProductVersion, ProductVersionImage, Discount, Slider
 from decimal import Decimal
 
 
@@ -12,22 +12,38 @@ class SliderSerializer(serializers.ModelSerializer):
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = '__all__'
+        fields = ['id', 'title', 'is_active']
 
 class ProductTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductTag
-        fields = '__all__'
+        fields = ['id', 'title', 'is_active']
 
-class ProductCategorySerializer(serializers.ModelSerializer):
+
+class ProductCategoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
-        fields = '__all__'
+        fields = ['title']
 
-class ProductSubcategorySerializer(serializers.ModelSerializer):
+
+class ProductCategoryListSerializer(serializers.ModelSerializer):
+    sub_categories = ProductCategoryCreateSerializer(many=True, source='subcategories')
+    class Meta:
+        model = ProductCategory
+        fields = ['id', 'title', 'is_active', 'sub_categories']   
+
+
+class ProductSubcategoryListSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source = 'category.title')
+
     class Meta:
         model = ProductSubcategory
-        fields = '__all__'
+        fields = ['id', 'title', 'category']
+
+class ProductSubcategoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSubcategory
+        fields = ['title', 'category']
 
 # class ProductSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -37,7 +53,7 @@ class ProductSubcategorySerializer(serializers.ModelSerializer):
 class ProductColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductColor
-        fields = '__all__'
+        fields = ['id', 'title', 'is_active', "hex_code"]
 
 class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,17 +61,52 @@ class DiscountSerializer(serializers.ModelSerializer):
         fields = [ 'title', 'discount_type', 'value']
 
 
+class ProductSizeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSize
+        fields = (
+            'title',
+        )
+
+class ProductColorListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductColor
+        fields = (
+            'title',
+        )
+
+class ProductTagListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductTag
+        fields = (
+            'title',
+        )
+
+class ProductImagesListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVersionImage
+        fields = ('id', 'image', 'is_active') 
+
+
+
 class ProductVersionListSerializer(serializers.ModelSerializer):
     discount = DiscountSerializer(required=False)
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     # color = serializers.CharField(source = 'color.title')
-    # size = serializers.CharField(source = 'size.title')
-    # brand = serializers.CharField(source = 'brand.title')
-    # subcategory = serializers.CharField(source = 'subcategory.title')
+    color = ProductColorListSerializer(many=True)
+    size = ProductSizeListSerializer(many=True)
+    tags = ProductTagListSerializer(many=True)
+    prod_images = ProductImagesListSerializer(many=True, source='images')
+    brand = serializers.CharField(source = 'brand.title')
+    subcategory = serializers.CharField(source = 'subcategory.title')
 
     class Meta:
         model = ProductVersion
-        fields = ['id','slug', 'title','description','brand','subcategory', 'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price', 'cover_image']
+        fields = ['id','slug', 
+                  'title','description',
+                  'brand','subcategory','size','color', 'tags',
+                    'sales', 'stock', 'is_active', 'price', 'discount', 'discounted_price', 
+                    'cover_image', 'prod_images', 'created_at', 'updated_at']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -80,3 +131,14 @@ class ProductVersionImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVersionImage
         fields = '__all__'
+
+
+
+class ProductVersionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVersion
+        fields = ['title', 'description', 
+                  'brand', 'subcategory', 
+                   'price', 'discount', 'stock', 
+                  'cover_image']  
+    

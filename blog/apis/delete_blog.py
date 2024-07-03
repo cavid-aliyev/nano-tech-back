@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework.generics import DestroyAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import status
 
 from blog.models import Blog
@@ -8,6 +9,7 @@ from blog.serializers import BlogSerializer, ChangeBlogSerializer
 
 
 class DeleteBlogApiView(DestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @extend_schema(
         request=ChangeBlogSerializer,

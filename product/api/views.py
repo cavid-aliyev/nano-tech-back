@@ -1,12 +1,8 @@
 from rest_framework import viewsets, filters
-from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Slider
-from .serializers import BrandSerializer, ProductTagSerializer, ProductCategorySerializer, ProductSubcategorySerializer, ProductColorSerializer, ProductVersionListSerializer, ProductVersionImageSerializer, SliderSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-
-
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils import translation
@@ -16,6 +12,15 @@ from django.views.decorators.http import require_POST
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticatedOrReadOnly
+
+from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Slider
+from .serializers import ( 
+    BrandSerializer, ProductTagSerializer, 
+    ProductCategoryListSerializer, ProductCategoryCreateSerializer, 
+    ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
+    ProductColorSerializer, 
+    ProductVersionListSerializer, ProductVersionCreateSerializer, ProductVersionImageSerializer, 
+    SliderSerializer)
 
 
 @api_view(['POST'])
@@ -115,13 +120,25 @@ class ProductTagViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
-    serializer_class = ProductCategorySerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return ProductCategoryListSerializer
+        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
+            return  ProductCategoryCreateSerializer
+        return ProductCategoryListSerializer  # default serializer
 
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductSubcategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductSubcategory.objects.all()
-    serializer_class = ProductSubcategorySerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return ProductSubcategoryListSerializer
+        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
+            return  ProductSubcategoryCreateSerializer
+        return ProductSubcategoryListSerializer  # default serializer
 
 # class ProductViewSet(viewsets.ModelViewSet):
 #     queryset = Product.objects.all()
@@ -136,14 +153,21 @@ class ProductColorViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductVersionViewSet(viewsets.ModelViewSet):
     queryset = ProductVersion.objects.all()
-    serializer_class = ProductVersionListSerializer
+    # serializer_class = ProductVersionListSerializer
 
     # filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     # filterset_fields = ['title', 'description']
     # search_fields = ['title', 'subcategory__title', 'brand__title', 'description']   # ?search=new
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'description']
+    search_fields = ['title', 'description']   # ?search=new
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return ProductVersionListSerializer
+        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
+            return ProductVersionCreateSerializer
+        return ProductVersionListSerializer  # default serializer
 
 
 class ProductVersionImageViewSet(viewsets.ModelViewSet):

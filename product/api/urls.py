@@ -1,7 +1,12 @@
 from django.urls import path
 from django.urls import include
 from rest_framework.routers import DefaultRouter
-from .views import BrandViewSet, ProductTagViewSet, ProductCategoryViewSet, ProductSubcategoryViewSet, ProductColorViewSet, ProductVersionViewSet, ProductVersionImageViewSet, product_detail, purchase_product,top_sales_products, SliderViewSet, set_language_api, get_language_options_api
+from .views import ( 
+    BrandViewSet, ProductTagViewSet, 
+    ProductCategoryViewSet, ProductSubcategoryViewSet, 
+    ProductColorViewSet, ProductVersionViewSet, ProductVersionImageViewSet, 
+    product_detail, purchase_product,top_sales_products, SliderViewSet, 
+    set_language_api, get_language_options_api )
 
 app_name = "product"
 
