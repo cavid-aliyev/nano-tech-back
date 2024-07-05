@@ -63,8 +63,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",   # corsheaders
-    'django.middleware.common.CommonMiddleware',
     "django.middleware.locale.LocaleMiddleware", # for translating
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -142,27 +142,31 @@ AUTH_USER_MODEL = 'account.CustomUser'
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en"
+LANGUAGE_CODE = "az"
 
 LANGUAGES = [
-    ('en', 'English'),
     ('az', 'Azerbaijan'),
+    ('en', 'English'),
     ('ru', 'Russian')
 ]
 
-# lang = True
-
 TIME_ZONE = "Asia/Baku"
 
-# prefix_default_language=True
-
 USE_I18N = True
-# USE_L10N = True
+USE_L10N = True
 USE_TZ = True
 
-# LANGUAGE_SESSION_KEY = 'django_language'  # Default is 'django_language'
-# LANGUAGE_SESSION_KEY = '_language'
 
+# Ensure this setting is at the bottom of your settings.py
+from django.utils.translation import gettext_lazy as _
+LANGUAGES = [
+    ('az', _('Azerbaijan')),
+    ('en', _('English')),
+    ('ru', _('Russian')),
+]
+
+# Optional: Set the language cookie name
+LANGUAGE_COOKIE_NAME = 'django_language'
 
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),

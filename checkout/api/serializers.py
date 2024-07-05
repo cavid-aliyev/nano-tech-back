@@ -9,12 +9,17 @@ from product.api.serializers import ProductVersionListSerializer
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model=ShoppingCart
         fields=(
             'id',
             'user',
         )
+
+    def validate(self, attrs):
+        attrs["user"] = self.context["request"].user
+        return super().validate(attrs)
 
 
 class CartItemReadSerializer(serializers.ModelSerializer):
@@ -28,10 +33,7 @@ class CartItemReadSerializer(serializers.ModelSerializer):
             'cart',
         )
 
-class CartItemCreateSerializer(serializers.ModelSerializer):
-    
-   
-
+class CartItemCreateSerializer(serializers.ModelSerializer):  
     class Meta:
 
         model=CartItem

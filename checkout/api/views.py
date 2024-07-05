@@ -35,13 +35,13 @@ class CartItemCreateAPIView(ListCreateAPIView):
         if self.request.method == 'POST':
             return CartItemCreateSerializer
         return super().get_serializer_class()
-
-    def create(self, request, *args, **kwargs):
+    
+    def create(self, request, *args, **kwargs):     
 
         print(self.request.user)
         cart = ShoppingCart.objects.get(user=self.request.user)
         print(cart.get_total)
-        
+
 
         request.data["cart"] = cart.id
         

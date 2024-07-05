@@ -23,9 +23,9 @@ class ProductColorTranslationOptions(TranslationOptions):
 class ProductTagTranslationOptions(TranslationOptions):
     fields = ('title',)
 
-@register(ProductSize)
-class ProductSizeTranslationOptions(TranslationOptions):
-    fields = ('title',)
+# @register(ProductSize)
+# class ProductSizeTranslationOptions(TranslationOptions):
+#     fields = ('title',)
 
 
 @register(ProductVersion)

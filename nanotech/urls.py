@@ -41,16 +41,16 @@ app_name="api"
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('set_language/', set_language_api, name='set_language_api'),
-    # path('language_options/', get_language_options_api, name='get_language_options_api'),
+    path('language_options/', get_language_options_api, name='get_language_options_api'),
 
-    path('product-api/', include('product.api.urls')),
+    # path('product-api/', include('product.api.urls')),
 
     path('account-api/', include('account.api.urls')),
     # path('api/account/', include('allauth.urls')),
     # path('social-auth/', include('social_django.urls', namespace='social')),
 
     path("ckeditor/", include("ckeditor_uploader.urls")),
-    path("blog-api/", include("blog.urls.apis")),
+    # path("blog-api/", include("blog.urls.apis")),
     path("social-media-api/", include("social_media.api.urls")),
     path("cart-api/", include('checkout.api.urls')),
 
@@ -71,6 +71,9 @@ urlpatterns += i18n_patterns(
     path('i18n/', include('django.conf.urls.i18n')),
     # path('i18n/', include('django_translation_flags.urls')),
 
-    # path('api/', include('product.api.urls')),
+    path('product-api/', include('product.api.urls')),
+    path("blog-api/", include("blog.urls.apis")),
+
+    prefix_default_language=True
 
 )

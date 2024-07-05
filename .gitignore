@@ -21,6 +21,7 @@ db.sqlite3
 db.sqlite3-journal
 media
 static
+_dev/
 
 pyvenv.cfg
 
