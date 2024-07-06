@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductSize, ProductVersion, ProductVersionImage, Discount, Slider
+from product.models import Brand, TopBrand,ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductSize, ProductVersion, ProductVersionImage, Discount, Slider
 from decimal import Decimal
 
 
@@ -12,7 +12,12 @@ class SliderSerializer(serializers.ModelSerializer):
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ['id', 'title', 'is_active']
+        fields = ['id', 'title', "image", 'is_active']
+
+class TopBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TopBrand
+        fields = '__all__'
 
 class ProductTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,6 +92,10 @@ class ProductImagesListSerializer(serializers.ModelSerializer):
         model = ProductVersionImage
         fields = ('id', 'image', 'is_active') 
 
+class ProductBrandListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id', "title", 'image']
 
 
 class ProductVersionListSerializer(serializers.ModelSerializer):
@@ -97,7 +106,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
     size = ProductSizeListSerializer(many=True)
     tags = ProductTagListSerializer(many=True)
     prod_images = ProductImagesListSerializer(many=True, source='images')
-    brand = serializers.CharField(source = 'brand.title')
+    brand = ProductBrandListSerializer()
     subcategory = serializers.CharField(source = 'subcategory.title')
 
     class Meta:

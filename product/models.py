@@ -22,11 +22,20 @@ class Slider(DateAbstractModel):
 
 class Brand(models.Model):
     title = models.CharField(max_length=200)
+    image = ImageField(upload_to='brand_image', null=True)
     is_active = models.BooleanField(default=True)
    
 
     def __str__(self):
         return self.title
+
+class TopBrand(DateAbstractModel):
+    image = ImageField(upload_to='brand_image', null=True)
+    is_active = models.BooleanField(default=True)
+   
+
+    def __str__(self):
+        return f"{self.id}'s top brand obj"
 
 
 class ProductTag(models.Model):

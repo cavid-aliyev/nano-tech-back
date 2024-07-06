@@ -33,7 +33,25 @@ class SliderAdmin(admin.ModelAdmin):
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ["id", "title", "is_active"]
-    list_display_links = ['id', "title"] 
+    list_display = ["id", "title", "get_photo", "is_active"]
+    list_display_links = ['id', "title", "get_photo"] 
     list_editable = ["is_active"]
     # list_per_page = 10
+
+    def get_photo(self, obj):
+        if obj.image:
+            img_str = f"<img src='{obj.image.url}' width='100px'>"
+        return format_html(img_str)
+
+
+@admin.register(TopBrand)
+class TopBrandAdmin(admin.ModelAdmin):
+    list_display = ["id", "get_photo", "is_active"]
+    list_display_links = ['id', "get_photo"] 
+    list_editable = ["is_active"]
+    # list_per_page = 10
+
+    def get_photo(self, obj):
+        if obj.image:
+            img_str = f"<img src='{obj.image.url}' width='100px'>"
+        return format_html(img_str)

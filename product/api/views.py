@@ -13,14 +13,14 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticatedOrReadOnly
 
-from product.models import Brand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Slider
+from product.models import Brand, TopBrand, ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductVersion, ProductVersionImage, Slider
 from .serializers import ( 
     BrandSerializer, ProductTagSerializer, 
     ProductCategoryListSerializer, ProductCategoryCreateSerializer, 
     ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
     ProductColorSerializer, 
     ProductVersionListSerializer, ProductVersionCreateSerializer, ProductVersionImageSerializer, 
-    SliderSerializer)
+    SliderSerializer, TopBrandSerializer)
 
 
 @api_view(['POST'])
@@ -105,6 +105,11 @@ class SliderViewSet(viewsets.ModelViewSet):
     queryset = Slider.objects.all()
     serializer_class = SliderSerializer
 
+@permission_classes([IsAuthenticatedOrReadOnly])
+class TopBrandViewSet(viewsets.ModelViewSet):
+    queryset = TopBrand.objects.all()
+    serializer_class = TopBrandSerializer
+
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class BrandViewSet(viewsets.ModelViewSet):
@@ -170,11 +175,16 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         return ProductVersionListSerializer  # default serializer
 
 
+@permission_classes([IsAuthenticatedOrReadOnly])
 class ProductVersionImageViewSet(viewsets.ModelViewSet):
     queryset = ProductVersionImage.objects.all()
     serializer_class = ProductVersionImageSerializer
 
+
+
+
 @api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def product_detail(request, slug):
     try:
         product = ProductVersion.objects.get(slug=slug)
@@ -194,6 +204,7 @@ def product_detail(request, slug):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def purchase_product(request, slug):
     try:
         product = ProductVersion.objects.get(slug=slug)
@@ -212,6 +223,7 @@ def purchase_product(request, slug):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def top_sales_products(request):
     top_products = ProductVersion.objects.order_by('-sales')[:10]
     serializer = ProductVersionListSerializer(top_products, many=True)
