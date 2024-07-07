@@ -17,6 +17,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
+        if data['email'] and User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError("Email is already in use.")
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
         return data
@@ -44,21 +46,24 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_active']
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    # username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        username = data.get('username')
+        # username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
 
-        if username and password:
-            user = authenticate(username=username, password=password)
+        if email and password:
+            user = authenticate(request=self.context.get('request'), email=email, password=password)
+            # print(user, "----------------")
             if user is None:
                 raise serializers.ValidationError("Invalid credentials")
             if not user.is_active:
                 raise serializers.ValidationError("Account is not activated")
         else:
-            raise serializers.ValidationError("Must include 'username' and 'password'")
+            raise serializers.ValidationError("Must include 'email' and 'password'")
 
         data['user'] = user
         return data
@@ -72,21 +77,24 @@ class LoginSerializer(serializers.Serializer):
         }
 
 class OTPVerificationSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    # username = serializers.CharField()
+    email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
 
     def validate(self, data):
-        username = data.get('username')
+        # username = data.get('username')
+        email = data.get('email')
         otp = data.get('otp')
         try:
-            user = User.objects.get(username=username, otp=otp)
+            user = User.objects.get(email=email, otp=otp)
         except User.DoesNotExist:
             raise serializers.ValidationError("Invalid OTP or username")
         return data
 
     def save(self):
-        username = self.validated_data['username']
-        user = User.objects.get(username=username)
+        # username = self.validated_data['username']
+        email = self.validated_data['email']
+        user = User.objects.get(email=email)
         user.is_active = True
         user.otp = ''
         user.save()
