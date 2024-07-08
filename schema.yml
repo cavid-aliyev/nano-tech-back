@@ -1,0 +1,3475 @@
+openapi: 3.0.3
+info:
+  title: Api System
+  version: '1.0'
+  description: Test
+paths:
+  /account-api/login/:
+    post:
+      operationId: account_api_login_create
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Login'
+          description: ''
+  /account-api/logout/:
+    post:
+      operationId: account_api_logout_create
+      tags:
+      - account-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /account-api/password-reset/:
+    post:
+      operationId: account_api_password_reset_create
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetRequest'
+          description: ''
+  /account-api/password-reset-confirm/:
+    post:
+      operationId: account_api_password_reset_confirm_create
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetConfirm'
+          description: ''
+  /account-api/profile/:
+    get:
+      operationId: account_api_profile_retrieve
+      tags:
+      - account-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: account_api_profile_update
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: account_api_profile_partial_update
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /account-api/register/:
+    post:
+      operationId: account_api_register_create
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /account-api/token/:
+    post:
+      operationId: account_api_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /account-api/token/refresh/:
+    post:
+      operationId: account_api_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /account-api/verify-otp/:
+    post:
+      operationId: account_api_verify_otp_create
+      tags:
+      - account-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OTPVerificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OTPVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OTPVerificationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OTPVerification'
+          description: ''
+  /az/blog-api/crud/:
+    get:
+      operationId: az_blog_api_crud_retrieve
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+    post:
+      operationId: az_blog_api_crud_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlogRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlogRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: Created
+                example:
+                  message: Blog created successfully
+          description: Created
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+    put:
+      operationId: az_blog_api_crud_update
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeBlogRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangeBlogRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangeBlogRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Blog updated successfully
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+  /az/blog-api/crud/{id}/:
+    delete:
+      operationId: az_blog_api_crud_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: No Content
+                example:
+                  message: Blog deleted successfully
+          description: No Content
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+  /az/product-api/brands/:
+    get:
+      operationId: az_product_api_brands_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Brand'
+          description: ''
+    post:
+      operationId: az_product_api_brands_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+          description: ''
+  /az/product-api/brands/{id}/:
+    get:
+      operationId: az_product_api_brands_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this brand.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+          description: ''
+    put:
+      operationId: az_product_api_brands_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this brand.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BrandRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+          description: ''
+    patch:
+      operationId: az_product_api_brands_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this brand.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBrandRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+          description: ''
+    delete:
+      operationId: az_product_api_brands_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this brand.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/categories/:
+    get:
+      operationId: az_product_api_categories_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategoryList'
+          description: ''
+    post:
+      operationId: az_product_api_categories_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategoryCreate'
+          description: ''
+  /az/product-api/categories/{id}/:
+    get:
+      operationId: az_product_api_categories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product category.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategoryList'
+          description: ''
+    put:
+      operationId: az_product_api_categories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product category.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductCategoryCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategoryCreate'
+          description: ''
+    patch:
+      operationId: az_product_api_categories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product category.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductCategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductCategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductCategoryCreateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategoryCreate'
+          description: ''
+    delete:
+      operationId: az_product_api_categories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product category.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/colors/:
+    get:
+      operationId: az_product_api_colors_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductColor'
+          description: ''
+    post:
+      operationId: az_product_api_colors_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductColorCreate'
+          description: ''
+  /az/product-api/colors/{id}/:
+    get:
+      operationId: az_product_api_colors_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product color.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductColor'
+          description: ''
+    put:
+      operationId: az_product_api_colors_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product color.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductColorCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductColorCreate'
+          description: ''
+    patch:
+      operationId: az_product_api_colors_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product color.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductColorCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductColorCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductColorCreateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductColorCreate'
+          description: ''
+    delete:
+      operationId: az_product_api_colors_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product color.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/product-images/:
+    get:
+      operationId: az_product_api_product_images_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductVersionImage'
+          description: ''
+    post:
+      operationId: az_product_api_product_images_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionImage'
+          description: ''
+  /az/product-api/product-images/{id}/:
+    get:
+      operationId: az_product_api_product_images_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version image.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionImage'
+          description: ''
+    put:
+      operationId: az_product_api_product_images_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version image.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductVersionImageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionImage'
+          description: ''
+    patch:
+      operationId: az_product_api_product_images_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version image.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionImageRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionImage'
+          description: ''
+    delete:
+      operationId: az_product_api_product_images_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version image.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/product/{slug}/:
+    get:
+      operationId: az_product_api_product_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: az_product_api_product_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /az/product-api/product/{slug}/purchase/:
+    post:
+      operationId: az_product_api_product_purchase_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /az/product-api/products/:
+    get:
+      operationId: az_product_api_products_list
+      parameters:
+      - in: query
+        name: brand_id
+        schema:
+          type: integer
+        description: Filter products by brand ID
+      - in: query
+        name: category_id
+        schema:
+          type: integer
+        description: Filter products by category ID
+      - in: query
+        name: discount
+        schema:
+          type: boolean
+          enum:
+          - false
+          - true
+        description: Filter by profitable products (products with a discount)
+      - in: query
+        name: is_new
+        schema:
+          type: boolean
+          enum:
+          - false
+          - true
+        description: Filter products that are new
+      - in: query
+        name: max_price
+        schema:
+          type: integer
+        description: Filter products with a maximum price
+      - in: query
+        name: min_price
+        schema:
+          type: integer
+        description: Filter products with a minimum price
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated result set
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of items per page
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search in title and description
+      - in: query
+        name: top_sales
+        schema:
+          type: boolean
+          enum:
+          - true
+        description: Filter by top sales products (products with sales > 0, descending
+          order by sales)
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductVersionList'
+          description: ''
+    post:
+      operationId: az_product_api_products_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionCreate'
+          description: ''
+  /az/product-api/products/{id}/:
+    get:
+      operationId: az_product_api_products_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionList'
+          description: ''
+    put:
+      operationId: az_product_api_products_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductVersionCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionCreate'
+          description: ''
+    patch:
+      operationId: az_product_api_products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductVersionCreateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVersionCreate'
+          description: ''
+    delete:
+      operationId: az_product_api_products_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product version.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/sliders/:
+    get:
+      operationId: az_product_api_sliders_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slider'
+          description: ''
+    post:
+      operationId: az_product_api_sliders_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slider'
+          description: ''
+  /az/product-api/sliders/{id}/:
+    get:
+      operationId: az_product_api_sliders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Slider.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slider'
+          description: ''
+    put:
+      operationId: az_product_api_sliders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Slider.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SliderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slider'
+          description: ''
+    patch:
+      operationId: az_product_api_sliders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Slider.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSliderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSliderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSliderRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slider'
+          description: ''
+    delete:
+      operationId: az_product_api_sliders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Slider.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/subcategories/:
+    get:
+      operationId: az_product_api_subcategories_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductSubcategoryList'
+          description: ''
+    post:
+      operationId: az_product_api_subcategories_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSubcategoryCreate'
+          description: ''
+  /az/product-api/subcategories/{id}/:
+    get:
+      operationId: az_product_api_subcategories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product subcategory.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSubcategoryList'
+          description: ''
+    put:
+      operationId: az_product_api_subcategories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product subcategory.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductSubcategoryCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSubcategoryCreate'
+          description: ''
+    patch:
+      operationId: az_product_api_subcategories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product subcategory.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductSubcategoryCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductSubcategoryCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductSubcategoryCreateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSubcategoryCreate'
+          description: ''
+    delete:
+      operationId: az_product_api_subcategories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product subcategory.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/tags/:
+    get:
+      operationId: az_product_api_tags_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductTag'
+          description: ''
+    post:
+      operationId: az_product_api_tags_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductTagCreate'
+          description: ''
+  /az/product-api/tags/{id}/:
+    get:
+      operationId: az_product_api_tags_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product tag.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductTag'
+          description: ''
+    put:
+      operationId: az_product_api_tags_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product tag.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductTagCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductTagCreate'
+          description: ''
+    patch:
+      operationId: az_product_api_tags_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product tag.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductTagCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductTagCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductTagCreateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductTagCreate'
+          description: ''
+    delete:
+      operationId: az_product_api_tags_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product tag.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /az/product-api/top-brands/:
+    get:
+      operationId: az_product_api_top_brands_list
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopBrand'
+          description: ''
+    post:
+      operationId: az_product_api_top_brands_create
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopBrand'
+          description: ''
+  /az/product-api/top-brands/{id}/:
+    get:
+      operationId: az_product_api_top_brands_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this top brand.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopBrand'
+          description: ''
+    put:
+      operationId: az_product_api_top_brands_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this top brand.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TopBrandRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopBrand'
+          description: ''
+    patch:
+      operationId: az_product_api_top_brands_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this top brand.
+        required: true
+      tags:
+      - az
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTopBrandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTopBrandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTopBrandRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopBrand'
+          description: ''
+    delete:
+      operationId: az_product_api_top_brands_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this top brand.
+        required: true
+      tags:
+      - az
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /cart-api/add-to-wishlist/:
+    post:
+      operationId: cart_api_add_to_wishlist_create
+      description: Add a product to the user's wishlist, with bearer token, and product
+        id as 'product
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /cart-api/cart-items/:
+    get:
+      operationId: cart_api_cart_items_list
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartItemRead'
+          description: ''
+    post:
+      operationId: cart_api_cart_items_create
+      tags:
+      - cart-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CartItemCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CartItemCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemCreate'
+          description: ''
+  /cart-api/cart-items/{id}/:
+    get:
+      operationId: cart_api_cart_items_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemDelete'
+          description: ''
+    put:
+      operationId: cart_api_cart_items_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemDeleteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CartItemDeleteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CartItemDeleteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemDelete'
+          description: ''
+    patch:
+      operationId: cart_api_cart_items_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemDeleteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemDeleteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemDeleteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemDelete'
+          description: ''
+    delete:
+      operationId: cart_api_cart_items_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /cart-api/get-wishlist/:
+    get:
+      operationId: cart_api_get_wishlist_retrieve
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /cart-api/remove-from-wishlist/{id}/:
+    delete:
+      operationId: cart_api_remove_from_wishlist_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /cart-api/shopping-cart/:
+    get:
+      operationId: cart_api_shopping_cart_list
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingCart'
+          description: ''
+    post:
+      operationId: cart_api_shopping_cart_create
+      tags:
+      - cart-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingCart'
+          description: ''
+  /language_options/:
+    get:
+      operationId: language_options_retrieve
+      description: API endpoint to get the list of available languages.
+      tags:
+      - language_options
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - az
+          - en
+          - ru
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /social-media-api/facebook/:
+    get:
+      operationId: social_media_api_facebook_retrieve
+      tags:
+      - social-media-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+  /social-media-api/instagram/:
+    get:
+      operationId: social_media_api_instagram_retrieve
+      tags:
+      - social-media-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+  /social-media-api/telegram/:
+    get:
+      operationId: social_media_api_telegram_retrieve
+      tags:
+      - social-media-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+  /social-media-api/tiktok/:
+    get:
+      operationId: social_media_api_tiktok_retrieve
+      tags:
+      - social-media-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+  /social-media-api/whatsapp/:
+    get:
+      operationId: social_media_api_whatsapp_retrieve
+      tags:
+      - social-media-api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Success
+                example:
+                  message: Success
+          description: Success
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Bad Request
+                example:
+                  message: Bad Request
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Not Found
+                example:
+                  message: Not Found
+          description: Not Found
+components:
+  schemas:
+    BlogRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        content:
+          type: string
+          minLength: 1
+        category:
+          type: integer
+        review_count:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - category
+      - content
+      - title
+    Brand:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - id
+      - title
+    BrandRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        image:
+          type: string
+          format: binary
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - title
+    CartItemCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product_version:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        cart:
+          type: integer
+      required:
+      - cart
+      - id
+      - product_version
+    CartItemCreateRequest:
+      type: object
+      properties:
+        product_version:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        cart:
+          type: integer
+      required:
+      - cart
+      - product_version
+    CartItemDelete:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    CartItemDeleteRequest:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    CartItemRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product_version:
+          $ref: '#/components/schemas/ProductVersionList'
+        cart:
+          $ref: '#/components/schemas/ShoppingCart'
+      required:
+      - cart
+      - id
+      - product_version
+    ChangeBlogRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        content:
+          type: string
+          minLength: 1
+      required:
+      - content
+      - id
+      - title
+    Discount:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        discount_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - discount_type
+      - title
+      - value
+    DiscountTypeEnum:
+      enum:
+      - percent
+      - amount
+      type: string
+      description: |-
+        * `percent` - Percentage
+        * `amount` - Amount
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    OTPVerification:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        otp:
+          type: string
+          maxLength: 6
+      required:
+      - email
+      - otp
+    OTPVerificationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        otp:
+          type: string
+          minLength: 1
+          maxLength: 6
+      required:
+      - email
+      - otp
+    PasswordResetConfirm:
+      type: object
+      properties:
+        uidb64:
+          type: string
+        token:
+          type: string
+      required:
+      - token
+      - uidb64
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        uidb64:
+          type: string
+          minLength: 1
+        token:
+          type: string
+          minLength: 1
+      required:
+      - new_password
+      - token
+      - uidb64
+    PasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PatchedBrandRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        image:
+          type: string
+          format: binary
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedCartItemDeleteRequest:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    PatchedProductCategoryCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PatchedProductColorCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PatchedProductSubcategoryCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          type: integer
+    PatchedProductTagCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        is_active:
+          type: boolean
+    PatchedProductVersionCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+        brand:
+          type: integer
+        subcategory:
+          type: integer
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          nullable: true
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        cover_image:
+          type: string
+          format: binary
+    PatchedProductVersionImageRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        is_active:
+          type: boolean
+        product_version:
+          type: integer
+    PatchedSliderRequest:
+      type: object
+      properties:
+        slider_image:
+          type: string
+          format: binary
+        is_active:
+          type: boolean
+    PatchedTopBrandRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: Istifadəçi adı
+          description: Tələb edilir. Ən az 150 simvol. Ancaq hərf, rəqəm və @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: E-poçt ünvanı
+          maxLength: 254
+        first_name:
+          type: string
+          title: Ad
+          maxLength: 150
+        last_name:
+          type: string
+          title: Soyad
+          maxLength: 150
+        is_active:
+          type: boolean
+          title: Aktiv
+          description: İstifadəçinin aktiv və ya qeyri-aktiv olmasını təyin edir.
+            Hesabları silmək əvəzinə bundan istifadə edin.
+    ProductBrandList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        image:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - id
+      - title
+    ProductCategoryCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - title
+    ProductCategoryCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - title
+    ProductCategoryList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+        sub_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSubcategoryListforCat'
+      required:
+      - id
+      - sub_categories
+      - title
+    ProductCategoryListforSubcat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - id
+      - title
+    ProductColor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+        hex_code:
+          type: string
+          maxLength: 7
+      required:
+      - hex_code
+      - id
+      - title
+    ProductColorCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - title
+    ProductColorCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - title
+    ProductColorList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - id
+      - title
+    ProductImagesList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+      required:
+      - id
+      - image
+    ProductSizeList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - title
+    ProductSubcategoryCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        category:
+          type: integer
+      required:
+      - category
+      - title
+    ProductSubcategoryCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          type: integer
+      required:
+      - category
+      - title
+    ProductSubcategoryList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        category:
+          $ref: '#/components/schemas/ProductCategoryListforSubcat'
+      required:
+      - category
+      - id
+      - title
+    ProductSubcategoryListforCat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - title
+    ProductTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - id
+      - title
+    ProductTagCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - title
+    ProductTagCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - title
+    ProductTagList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+      required:
+      - id
+      - title
+    ProductVersionCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        brand:
+          type: integer
+        subcategory:
+          type: integer
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          nullable: true
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        cover_image:
+          type: string
+          format: uri
+      required:
+      - brand
+      - cover_image
+      - price
+      - stock
+      - subcategory
+      - title
+    ProductVersionCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+        brand:
+          type: integer
+        subcategory:
+          type: integer
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          type: integer
+          nullable: true
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        cover_image:
+          type: string
+          format: binary
+      required:
+      - brand
+      - cover_image
+      - price
+      - stock
+      - subcategory
+      - title
+    ProductVersionImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        product_version:
+          type: integer
+      required:
+      - created_at
+      - id
+      - image
+      - product_version
+      - updated_at
+    ProductVersionImageRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        is_active:
+          type: boolean
+        product_version:
+          type: integer
+      required:
+      - image
+      - product_version
+    ProductVersionList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          nullable: true
+          maxLength: 200
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        brand:
+          $ref: '#/components/schemas/ProductBrandList'
+        subcategory:
+          $ref: '#/components/schemas/ProductSubcategoryList'
+        size:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSizeList'
+        color:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductColorList'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductTagList'
+        sales:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+        is_new:
+          type: boolean
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        discount:
+          $ref: '#/components/schemas/Discount'
+        discounted_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        cover_image:
+          type: string
+          format: uri
+        prod_images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImagesList'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - brand
+      - color
+      - cover_image
+      - created_at
+      - discounted_price
+      - id
+      - price
+      - prod_images
+      - size
+      - stock
+      - subcategory
+      - tags
+      - title
+      - updated_at
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          title: Istifadəçi adı
+          description: Tələb edilir. Ən az 150 simvol. Ancaq hərf, rəqəm və @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: E-poçt ünvanı
+          maxLength: 254
+        first_name:
+          type: string
+          title: Ad
+          maxLength: 150
+        last_name:
+          type: string
+          title: Soyad
+          maxLength: 150
+      required:
+      - username
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: Istifadəçi adı
+          description: Tələb edilir. Ən az 150 simvol. Ancaq hərf, rəqəm və @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Şifrə
+          maxLength: 128
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+        email:
+          type: string
+          format: email
+          title: E-poçt ünvanı
+          maxLength: 254
+        first_name:
+          type: string
+          title: Ad
+          maxLength: 150
+        last_name:
+          type: string
+          title: Soyad
+          maxLength: 150
+      required:
+      - password
+      - password2
+      - username
+    ShoppingCart:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - user
+    Slider:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        slider_image:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+      required:
+      - created_at
+      - id
+      - slider_image
+      - updated_at
+    SliderRequest:
+      type: object
+      properties:
+        slider_image:
+          type: string
+          format: binary
+        is_active:
+          type: boolean
+      required:
+      - slider_image
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    TopBrand:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - created_at
+      - id
+      - updated_at
+    TopBrandRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          nullable: true
+        is_active:
+          type: boolean
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Istifadəçi adı
+          description: Tələb edilir. Ən az 150 simvol. Ancaq hərf, rəqəm və @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: E-poçt ünvanı
+          maxLength: 254
+        first_name:
+          type: string
+          title: Ad
+          maxLength: 150
+        last_name:
+          type: string
+          title: Soyad
+          maxLength: 150
+        is_active:
+          type: boolean
+          title: Aktiv
+          description: İstifadəçinin aktiv və ya qeyri-aktiv olmasını təyin edir.
+            Hesabları silmək əvəzinə bundan istifadə edin.
+      required:
+      - id
+      - username
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: Istifadəçi adı
+          description: Tələb edilir. Ən az 150 simvol. Ancaq hərf, rəqəm və @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: E-poçt ünvanı
+          maxLength: 254
+        first_name:
+          type: string
+          title: Ad
+          maxLength: 150
+        last_name:
+          type: string
+          title: Soyad
+          maxLength: 150
+        is_active:
+          type: boolean
+          title: Aktiv
+          description: İstifadəçinin aktiv və ya qeyri-aktiv olmasını təyin edir.
+            Hesabları silmək əvəzinə bundan istifadə edin.
+      required:
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

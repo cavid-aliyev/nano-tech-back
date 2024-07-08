@@ -122,6 +122,7 @@ class ProductVersion(models.Model):
     cover_image = ImageField(upload_to='product_version_image')
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(null=True, blank=True, max_length=200)
+    is_new = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

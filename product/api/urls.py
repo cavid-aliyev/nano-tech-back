@@ -27,6 +27,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('product/<slug:slug>/', product_detail, name='product_detail'),
     path('product/<slug:slug>/purchase/', purchase_product, name='purchase_product'),
-    path('top-sales-products/', top_sales_products, name='top_sales_products'),
+    # path('top-sales-products/', top_sales_products, name='top_sales_products'),
 
 ]
