@@ -5,15 +5,17 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator as token_generator
 import random
+from datetime import datetime
 
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
+    full_name = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'password2', 'email', 'first_name', 'last_name']
+        fields = ['password', 'password2', 'email', 'full_name']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
@@ -21,15 +23,24 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email is already in use.")
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
+        
+        # Check if full name contains at least two parts
+        full_name_parts = data['full_name'].strip().split()
+        if len(full_name_parts) < 2:
+            raise serializers.ValidationError("Please enter both a first name and a last name.")
+        
         return data
 
     def create(self, validated_data):
+        full_name = validated_data.pop('full_name')
+        first_name, last_name = full_name.split(' ', 1)  # Split full name into first and last name
+        full_name_parts = full_name.strip().split()
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username="".join(full_name_parts) + '-' + str(datetime.now().timestamp()).replace('.',''),
             password=validated_data['password'],
             email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
+            first_name=first_name,
+            last_name=last_name,
             is_active=False
         )
         user.otp = str(random.randint(100000, 999999))
@@ -41,17 +52,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_active']
+        fields = ['id', 'email', 'full_name', 'is_active', "first_name", "last_name"]
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
 
 class LoginSerializer(serializers.Serializer):
-    # username = serializers.CharField()
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        # username = data.get('username')
         email = data.get('email')
         password = data.get('password')
 
@@ -77,22 +90,19 @@ class LoginSerializer(serializers.Serializer):
         }
 
 class OTPVerificationSerializer(serializers.Serializer):
-    # username = serializers.CharField()
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
 
     def validate(self, data):
-        # username = data.get('username')
         email = data.get('email')
         otp = data.get('otp')
         try:
             user = User.objects.get(email=email, otp=otp)
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid OTP or username")
+            raise serializers.ValidationError("Invalid OTP or email")
         return data
 
     def save(self):
-        # username = self.validated_data['username']
         email = self.validated_data['email']
         user = User.objects.get(email=email)
         user.is_active = True

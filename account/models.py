@@ -11,6 +11,7 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
+    # full_name = models.CharField(max_length=255, blank=True, null=True)
     # username = models.CharField(max_length=100, unique=True)
     # first_name = models.CharField(max_length=50)
     # last_name = models.CharField(max_length=50)
@@ -31,6 +32,9 @@ class CustomUser(AbstractUser):
 
     # def __str__(self):
     #     return self.username
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
     
 
     # class Meta:

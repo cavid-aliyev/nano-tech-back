@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields.files import ImageField
 from django.utils.text import slugify
+from datetime import datetime
 # from django.utils.translation import gettext_lazy as _
 
 
@@ -140,6 +141,7 @@ class ProductVersion(models.Model):
     
     def save(self,*args,**kwargs):
         self.slug=slugify(self.title)
+        self.slug = self.slug + '-' + str(datetime.now().timestamp()).replace('.','')
         return super(ProductVersion,self).save()
     
 

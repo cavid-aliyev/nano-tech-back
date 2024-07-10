@@ -11,10 +11,15 @@ class CartItemInline(admin.TabularInline):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'created_at', 'updated_at', 'get_total')
+    # list_editable = ['get_user']
     list_filter = ('created_at', 'updated_at')
     search_fields = ('user__username',)
     readonly_fields = ('created_at', 'updated_at', 'get_total')
     inlines = [CartItemInline]
+
+    # def get_user(self, obj):
+    #     return obj.user.get_full_name()
+    # get_user.short_description = 'User'
 
     def get_total(self, obj):
         return obj.get_total
