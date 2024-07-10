@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.models import Session
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
 
 from checkout.models import WishlistItem, ShoppingCart,CartItem
 from checkout.api.serializers import WishlistItemCreateSerializer, WishlistItemListSerializer
@@ -64,21 +65,17 @@ class CartItemDeleteAPIView(RetrieveUpdateDestroyAPIView):
 
 
 
-
 @extend_schema(
-    # request={
-    #     "type": "object",
-    #     "properties": {
-    #         "product": {"type": "integer"}
-    #     },
-    #     "required": ["product"]
-    # },
-    # responses={
-    #     201: WishlistItemCreateSerializer,
-    #     400: {"error": {"type": "string"}}
-    # },
-    description="Add a product to the user's wishlist, with bearer token, and product id as 'product",
-    
+    request=WishlistItemCreateSerializer,
+    responses={201: WishlistItemCreateSerializer, 400: 'Bad Request', 404: 'Not Found'},
+    parameters=[
+        OpenApiParameter(
+            name='product',
+            type=int,
+            required=True,
+            description='ID of the product to add to the wishlist'
+        )
+    ]
 )
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
