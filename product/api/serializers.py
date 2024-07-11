@@ -3,7 +3,7 @@ from product.models import (
         Brand, TopBrand,ProductTag, 
         ProductCategory, ProductSubcategory, ProductColor, 
         ProductSize, ProductVersion, ProductVersionImage, 
-        Discount, Slider, SpecialDiscount)
+        Discount, Slider, SpecialDiscount, ProductDetail)
 from decimal import Decimal
 from django.utils import timezone
 
@@ -72,10 +72,6 @@ class ProductSubcategoryCreateSerializer(serializers.ModelSerializer):
         model = ProductSubcategory
         fields = ['title', 'category']
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Product
-#         fields = '__all__'
 
 class ProductColorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -146,6 +142,12 @@ class ProductBrandListSerializer(serializers.ModelSerializer):
         fields = ['id', "title", 'image']
 
 
+class ProductDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductDetail
+        fields = ( 'id', 'processor', 'screen_diagonal', 'video_card', 'ram', 'memory', 'screen_indicators', 'operating_system')
+
+
 class ProductVersionListSerializer(serializers.ModelSerializer):
     discount = DiscountSerializer(required=False)
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -159,11 +161,13 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
     subcategory = ProductSubcategoryListSerializer()
     # special_discount = SpecialDiscountSerializer(source='special_discounts',many=True, read_only=True)
     has_daily_special_discount = serializers.SerializerMethodField()
+    product_details = ProductDetailSerializer(source='specifications', read_only=True)
 
     class Meta:
         model = ProductVersion
         fields = ['id','slug', 
                 'title','description', 'price', 'discount', 'discounted_price', "has_daily_special_discount",
+                'product_details', 
                 'brand','subcategory','size','color', 'tags',
                 'sales', 'stock', 'is_active', 'is_new',
                 'cover_image', 'prod_images', 'created_at', 'updated_at']

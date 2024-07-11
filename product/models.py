@@ -19,7 +19,7 @@ class Slider(DateAbstractModel):
 
     class Meta:
         verbose_name = "Slider"
-        verbose_name_plural = "Slider"
+        verbose_name_plural = "Sliders"
         ordering = ["id"]
 
 
@@ -31,6 +31,11 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Brand"
+        verbose_name_plural = "Brands"
+        ordering = ["id"]
 
 class TopBrand(DateAbstractModel):
     image = ImageField(upload_to='brand_image', null=True)
@@ -39,6 +44,11 @@ class TopBrand(DateAbstractModel):
 
     def __str__(self):
         return f"{self.id}'s top brand obj"
+    
+    class Meta:
+        verbose_name = "Top Brand"
+        verbose_name_plural = "Top Brands"
+        ordering = ["-created_at"]
 
 
 class ProductTag(models.Model):
@@ -48,6 +58,11 @@ class ProductTag(models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Tag"
+        verbose_name_plural = "Tags"
+        ordering = ["id"]
 
 
 class ProductCategory(models.Model):
@@ -58,12 +73,22 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.title
     
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        ordering = ["id"]
+    
 class ProductSubcategory(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='subcategories')
     title = models.CharField(max_length=100)
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Subcategory"
+        verbose_name_plural = "Subcategories"
+        ordering = ["id"]
     
 
 
@@ -89,12 +114,22 @@ class ProductColor(models.Model):
     def __str__(self):
         return self.title
     
+    class Meta:
+        verbose_name = "Color"
+        verbose_name_plural = "Colors"
+        ordering = ["id"]
+    
 
 class ProductSize(models.Model):
     title = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Size"
+        verbose_name_plural = "Sizes"
+        ordering = ["id"]
     
 
 class Discount(models.Model):
@@ -108,6 +143,11 @@ class Discount(models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Discount"
+        verbose_name_plural = "Discounts"
+        ordering = ["id"]
 
 
 class ProductVersion(models.Model):
@@ -167,6 +207,27 @@ class ProductVersion(models.Model):
         return super(ProductVersion,self).save()
     
 
+class ProductDetail(DateAbstractModel):
+    product = models.OneToOneField(ProductVersion, related_name='specifications', on_delete=models.CASCADE)
+    processor = models.CharField(max_length=100) 
+    screen_diagonal = models.CharField(max_length=100)
+    video_card = models.CharField(max_length=100)
+    ram = models.CharField(max_length=100)
+    memory = models.CharField(max_length=100)
+    screen_indicators = models.CharField(max_length=100)
+    operating_system = models.CharField(max_length=100)
+    
+
+    def __str__(self):
+        return f"{self.product.title}'s details"
+    
+
+    class Meta:
+        verbose_name = "Product Detail"
+        verbose_name_plural = "Product Details"
+        ordering = ["-created_at"]
+
+
 class SpecialDiscount(DateAbstractModel):
     product_version = models.ForeignKey(ProductVersion, on_delete=models.CASCADE, related_name='special_discounts')
     discount_type = models.CharField(max_length=10, choices=Discount.DISCOUNT_TYPE_CHOICES)
@@ -192,6 +253,11 @@ class ProductVersionImage(models.Model):
 
     def __str__(self):
         return str(self.product_version)
+    
+    class Meta:
+        verbose_name = "Product Image"
+        verbose_name_plural = "Product Images"
+        ordering = ["-created_at"]
     
 
 

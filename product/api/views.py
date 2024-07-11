@@ -194,7 +194,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = ProductVersionFilter
     search_fields = ['title', 'description']
-    ordering_fields = ['price']  # Allow ordering by price
+    ordering_fields = ['price', 'dis_price']  # Allow ordering by price
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
@@ -237,8 +237,16 @@ def product_detail(request, slug):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
+        # Serialize the main product
         serializer = ProductVersionListSerializer(product)
-        return Response(serializer.data)
+        data = serializer.data
+
+        # Fetch similar products (same category, excluding the current product)
+        similar_products = ProductVersion.objects.filter(subcategory__category=product.subcategory.category).exclude(slug=product.slug)
+        similar_serializer = ProductVersionListSerializer(similar_products, many=True)
+        data['similar_products'] = similar_serializer.data
+
+        return Response(data)
 
     elif request.method == 'PUT':
         serializer = ProductVersionListSerializer(product, data=request.data)

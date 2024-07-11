@@ -16,6 +16,7 @@ admin.site.register(ProductVersionImage)
 admin.site.register(Discount)
 admin.site.register(ProductSize)
 # admin.site.register(Slider)
+# admin.site.register(ProductDetail)
 
 
 
@@ -37,6 +38,19 @@ class SpecialDiscountInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(ProductDetail)
+class ProductDetailAdmin(admin.ModelAdmin):
+    list_display = ['product', 'processor', 'screen_diagonal', 'video_card', 'ram', 'memory', 'screen_indicators', 'operating_system', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['product__title']
+
+
+class ProductDetailInline(admin.StackedInline):  # Use StackedInline or TabularInline based on your preference
+    model = ProductDetail
+    can_delete = False  # Prevents deletion of associated ProductDetail when editing ProductVersion
+    verbose_name_plural = 'Product Details'  # Displayed name for the inline section
+
+
 @admin.register(ProductVersion)
 class ProductAdmin(TranslationAdmin):
     list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand','subcategory', 'get_cat','get_sizes' )
@@ -52,7 +66,7 @@ class ProductAdmin(TranslationAdmin):
     #         'fields': ('subcategory', 'brand', 'size','color' ,'tags')
     #     }),
     # )
-    inlines = [ImageInline, SpecialDiscountInline]
+    inlines = [ImageInline, SpecialDiscountInline, ProductDetailInline]
 
 
     def get_sizes(self, obj):
