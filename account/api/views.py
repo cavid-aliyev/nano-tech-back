@@ -2,8 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.hashers import make_password
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 import random
 from .serializers import (
     RegisterSerializer, UserSerializer, LoginSerializer,
@@ -136,8 +139,10 @@ class LogoutView(APIView):
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         except KeyError:
             return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

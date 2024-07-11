@@ -11,6 +11,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from django.db.models import QuerySet
 
 from product.models import (Brand, TopBrand, 
     ProductTag, ProductCategory, ProductSubcategory, 
@@ -174,7 +175,7 @@ class ProductColorViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         parameters=[
-            OpenApiParameter( name='is_new', type=bool, required=False,enum=[True, False], description='Filter products that are new'),
+            OpenApiParameter( name='is_new', type=bool, required=False,enum=[True], description='Filter products that are new'),
             OpenApiParameter( name='discount', description='Filter by profitable products (products with a discount or daily special discount)', required=False, type=bool, enum=[True]),
             OpenApiParameter(name='daily_special_discount', description='Filter product with daily special discounts (only one product with daily discount last added )', required=False, type=bool, enum=[True]),
             OpenApiParameter( name='top_sales', description='Filter by top sales products (products with sales > 0, descending order by sales)', required=False,type=bool, enum=[True]),
@@ -183,8 +184,9 @@ class ProductColorViewSet(viewsets.ModelViewSet):
             OpenApiParameter( name='search', description='Search in title and description', required=False, type=str),
             OpenApiParameter(name='page', type=OpenApiTypes.INT, required=False, description='A page number within the paginated result set'),
             OpenApiParameter(name='page_size', type=OpenApiTypes.INT, required=False, description='Number of items per page'),
-            OpenApiParameter(name='brand_id', type=OpenApiTypes.INT, required=False, description='Filter products by brand ID'),
-            OpenApiParameter(name='category_id', type=OpenApiTypes.INT, required=False, description='Filter products by category ID'),
+            OpenApiParameter(name='brand_id', type=OpenApiTypes.INT, required=False, description='Filter products by brand ID (comma-separated list like brand_id=1,2,3)'),
+            OpenApiParameter(name='category_id', type=OpenApiTypes.INT, required=False, description='Filter products by category ID (comma-separated list like category_id=1,2,3)'),
+            OpenApiParameter(name='order_by', type=OpenApiTypes.STR, enum=['-price', 'price','newest', 'title'], required=False, description='Order products by price(price: ascending, -price:descending), newest, or title'),
        ]
     )
 )
@@ -192,9 +194,8 @@ class ProductColorViewSet(viewsets.ModelViewSet):
 class ProductVersionViewSet(viewsets.ModelViewSet):
     queryset = ProductVersion.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_class = ProductVersionFilter
+    # filterset_class = ProductVersionFilter
     search_fields = ['title', 'description']
-    ordering_fields = ['price', 'dis_price']  # Allow ordering by price
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
@@ -203,18 +204,89 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
             return ProductVersionCreateSerializer
         return ProductVersionListSerializer  # default serializer
     
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        filterset = self.filterset_class(request.GET, queryset=queryset)
-        if filterset.is_valid():
-            queryset = filterset.qs
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        is_new = self.request.query_params.get('is_new')
+        top_sales = self.request.query_params.get('top_sales', None)
+        discount = self.request.query_params.get('discount', None)
+        daily_special_discount = self.request.query_params.get('daily_special_discount', None)
+        ordering = self.request.query_params.get('order_by')
+        max_price = self.request.query_params.get('max_price')
+        min_price = self.request.query_params.get('min_price')
+        brand_ids = self.request.query_params.get('brand_id')
+        category_ids = self.request.query_params.get('category_id')
+        processor = self.request.query_params.get('processor')
+        products = list(queryset)
+        if ordering == "price" or ordering == "-price" or ordering == "newest" or ordering == "title":
+            if ordering == "price":  # evvelce ucuz
+                # Fetch all products and sort them in Python
+                products.sort(key=lambda product: product.get_discounted_price())
+            elif ordering == "-price":  # evvelce bahali
+                products.sort(key=lambda product: product.get_discounted_price(), reverse=True)
+            elif ordering == "newest":  # en yeniler
+                products.sort(key=lambda product: product.created_at, reverse=True)
+            elif ordering == "title":  # mehsulun adina gore
+                products.sort(key=lambda product: product.title)
+        if max_price:
+            products = [product for product in products if product.get_discounted_price() <= int(max_price)]
+        if min_price:
+            products = [product for product in products if product.get_discounted_price() >= int(min_price)]
+        if is_new:
+            products = [product for product in products if product.is_new]
+        if top_sales == "true" or top_sales == "True":
+            products = [product for product in products if product.sales > 0]
+            products.sort(key=lambda product: product.sales, reverse=True)
+        if discount == "true" or discount == "True":
+            products = [product for product in products if product.discount or product.special_discounts.filter(is_active=True).exists()]
+        if daily_special_discount == "true" or daily_special_discount == "True":
+            products = [product for product in products if product.special_discounts.filter(is_active=True).exists()]
+            products.sort(key=lambda product: product.special_discounts.filter(is_active=True).last().created_at, reverse=True)
+            products = products[:1]
+        if brand_ids:
+            brand_ids = list(map(int, brand_ids.split(',')))  # Convert comma-separated string to a list of integers
+            print(brand_ids, "brand_ids------")
+            products = [product for product in products if product.brand.id in brand_ids]
+        if category_ids:
+            category_ids = list(map(int, category_ids.split(',')))
+            print(category_ids, "category_ids------")
+            products = [product for product in products if product.subcategory.category.id in category_ids]
+        if processor:
+            processor_titles = list(map(str, processor.split(',')))
+            print(processor_titles, "processor_titles------")
+            # products = [product for product in products if product.specifications.processor in processor_titles]
+        
+        return products
+        
+    
 
+    def list(self, request, *args, **kwargs):
+        # queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.get_queryset()
+        # filterset = self.filterset_class(request.GET, queryset=queryset)
+        # if filterset.is_valid():
+        #     queryset = filterset.qs
+
+        # If the queryset is a list (sorted), handle pagination manually
+        # if isinstance(queryset, list):
         page = int(request.GET.get('page', 1))
-        page_size = int(request.GET.get('page_size', 10))
+        page_size = int(request.GET.get('page_size', 12))
         start = (page - 1) * page_size
         end = start + page_size
-
         paginated_queryset = queryset[start:end]
+        # else:
+        #     queryset = self.filter_queryset(queryset)
+        #     page = self.paginate_queryset(queryset)
+        #     if page is not None:
+        #         serializer = self.get_serializer(page, many=True)
+        #         return self.get_paginated_response(serializer.data)
+        #     paginated_queryset = queryset
+
+        # page = int(request.GET.get('page', 1))
+        # page_size = int(request.GET.get('page_size', 10))
+        # start = (page - 1) * page_size
+        # end = start + page_size
+
+        # paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
         return Response(serializer.data)
 

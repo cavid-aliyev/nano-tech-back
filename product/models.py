@@ -172,7 +172,7 @@ class ProductVersion(models.Model):
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
-        ordering = ["-created_at"]
+        ordering = ["created_at"]
 
     def __str__(self):
         return self.title
