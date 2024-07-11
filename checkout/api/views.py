@@ -87,15 +87,14 @@ def AddToWishlistAPIView(request):
         return JsonResponse({'error': 'Product ID is required'}, status=404)
     
 
-    # Check if the product already exists in the user's wishlist
-    wishlist = request.user.user_wishlist.all()
-    if wishlist.filter(product__id=product).exists():
-        return JsonResponse({'error': 'Product already exists in wishlist'}, status=404)
-    else:
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status = 201)
-        return JsonResponse(serializer.errors, status = 400)
+    #  Check if the product already exists in the user's wishlist
+    if request.user.user_wishlist.filter(product__id=product).exists():
+        return JsonResponse({'error': 'Product already exists in wishlist'}, status=400)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status = 201)
+    return JsonResponse(serializer.errors, status = 400)
     
 
 class WishlistItemsAPIView(APIView):
