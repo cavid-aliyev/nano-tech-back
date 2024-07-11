@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.fields.files import ImageField
 from django.utils.text import slugify
 from datetime import datetime
+from django.utils import timezone
+from decimal import Decimal
 # from django.utils.translation import gettext_lazy as _
 
 
@@ -106,7 +108,7 @@ class Discount(models.Model):
 
     def __str__(self):
         return self.title
-    
+
 
 class ProductVersion(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='product_versions')
@@ -127,22 +129,57 @@ class ProductVersion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
+        ordering = ["-created_at"]
+
     def __str__(self):
         return self.title
     
     def get_discounted_price(self):
-        if self.discount:
+        # today = timezone.now().date()
+        special_discount = self.special_discounts.filter(is_active=True).first()
+
+        if special_discount:
+            if special_discount.discount_type == 'percent':
+                discounted_price = self.price - (self.price * (special_discount.value / 100))
+            elif special_discount.discount_type == 'amount':
+                discounted_price = self.price - special_discount.value
+        elif self.discount:
             if self.discount.discount_type == 'percent':
-                return self.price - (self.price * (self.discount.value / 100))
+                discounted_price = self.price - (self.price * (self.discount.value / 100))
             elif self.discount.discount_type == 'amount':
-                return self.price - self.discount.value
-        return self.price
+                discounted_price = self.price - self.discount.value
+        else:
+            discounted_price = self.price
+        
+        return round(Decimal(discounted_price), 2)
+    
+    def has_active_special_discount(self):
+        return self.special_discounts.filter(is_active=True).exists()
+    
     
     
     def save(self,*args,**kwargs):
         self.slug=slugify(self.title)
         self.slug = self.slug + '-' + str(datetime.now().timestamp()).replace('.','')
         return super(ProductVersion,self).save()
+    
+
+class SpecialDiscount(DateAbstractModel):
+    product_version = models.ForeignKey(ProductVersion, on_delete=models.CASCADE, related_name='special_discounts')
+    discount_type = models.CharField(max_length=10, choices=Discount.DISCOUNT_TYPE_CHOICES)
+    value = models.DecimalField(decimal_places=2, max_digits=10)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Special Discount on {self.created_at} for {self.product_version}"
+    
+    class Meta:
+        verbose_name = "Daily Special Discount"
+        verbose_name_plural = "Daily Special Discounts"
+        ordering = ["-created_at"]
     
 
 

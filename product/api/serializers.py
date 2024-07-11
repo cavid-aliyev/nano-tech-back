@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from product.models import Brand, TopBrand,ProductTag, ProductCategory, ProductSubcategory, ProductColor, ProductSize, ProductVersion, ProductVersionImage, Discount, Slider
+from product.models import (
+        Brand, TopBrand,ProductTag, 
+        ProductCategory, ProductSubcategory, ProductColor, 
+        ProductSize, ProductVersion, ProductVersionImage, 
+        Discount, Slider, SpecialDiscount)
 from decimal import Decimal
-
+from django.utils import timezone
 
 class SliderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,7 +85,23 @@ class ProductColorSerializer(serializers.ModelSerializer):
 class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
-        fields = [ 'title', 'discount_type', 'value']
+        fields = [ 'discount_type', 'value']
+
+
+class SpecialDiscountSerializer(serializers.ModelSerializer):
+    # product = serializers.CharField(source = 'product_version.title')
+    class Meta:
+        model = SpecialDiscount
+        fields = [ 'discount_type', 'value']
+
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     today = timezone.now().date()
+    #     if instance.date == today:
+    #         representation['is_active'] = True
+    #     else:
+    #         representation['is_active'] = False
+    #     return representation
 
 
 class ProductSizeListSerializer(serializers.ModelSerializer):
@@ -137,30 +157,37 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
     brand = ProductBrandListSerializer()
     # subcategory = serializers.CharField(source = 'subcategory.title')
     subcategory = ProductSubcategoryListSerializer()
+    # special_discount = SpecialDiscountSerializer(source='special_discounts',many=True, read_only=True)
+    has_daily_special_discount = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductVersion
         fields = ['id','slug', 
-                  'title','description',
-                  'brand','subcategory','size','color', 'tags',
-                    'sales', 'stock', 'is_active', 'is_new', 'price', 'discount', 'discounted_price', 
-                    'cover_image', 'prod_images', 'created_at', 'updated_at']
+                'title','description', 'price', 'discount', 'discounted_price', "has_daily_special_discount",
+                'brand','subcategory','size','color', 'tags',
+                'sales', 'stock', 'is_active', 'is_new',
+                'cover_image', 'prod_images', 'created_at', 'updated_at']
+    
+    def get_has_daily_special_discount(self, obj):
+        return obj.has_active_special_discount()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        discount = data.get('discount')
-        price = Decimal(data.get('price', '0.00'))
+        discounted_price = instance.get_discounted_price()
+        # print('discounted_price----------------', discounted_price)
+        data['discounted_price'] = discounted_price
 
-        if discount:
-            discount_type = discount.get('discount_type')
-            value = Decimal(discount.get('value', '0.00'))
-            if discount_type == 'percent':
-                discounted_price = price - (price * (value / Decimal(100)))
-            elif discount_type == 'amount':
-                discounted_price = price - value
-            data['discounted_price'] = round(discounted_price, 2)
-        else:
-            data['discounted_price'] = price
+        # Check for special discounts first
+        # special_discounts = instance.special_discounts.filter(date=timezone.now().date())
+        special_discounts = instance.special_discounts.filter(is_active=True).first()
+        # if special_discount.exists():
+        if special_discounts:
+            # special_discount = special_discounts.first()
+            data['discount'] = SpecialDiscountSerializer(special_discounts).data
+        # elif discount:
+        #     data['discounted_price'] = round(discounted_price, 2)
+        # else:
+        #     data['discounted_price'] = price
 
         return data
     

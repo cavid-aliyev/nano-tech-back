@@ -175,7 +175,8 @@ class ProductColorViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         parameters=[
             OpenApiParameter( name='is_new', type=bool, required=False,enum=[True, False], description='Filter products that are new'),
-            OpenApiParameter( name='discount', description='Filter by profitable products (products with a discount)', required=False, type=bool, enum=[True, False]),
+            OpenApiParameter( name='discount', description='Filter by profitable products (products with a discount or daily special discount)', required=False, type=bool, enum=[True]),
+            OpenApiParameter(name='daily_special_discount', description='Filter product with daily special discounts (only one product with daily discount last added )', required=False, type=bool, enum=[True]),
             OpenApiParameter( name='top_sales', description='Filter by top sales products (products with sales > 0, descending order by sales)', required=False,type=bool, enum=[True]),
             OpenApiParameter( name='min_price', type=OpenApiTypes.INT, required=False,  description='Filter products with a minimum price'),
             OpenApiParameter( name='max_price', type=OpenApiTypes.INT, required=False, description='Filter products with a maximum price'),
@@ -193,6 +194,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = ProductVersionFilter
     search_fields = ['title', 'description']
+    ordering_fields = ['price']  # Allow ordering by price
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
@@ -215,6 +217,8 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
         return Response(serializer.data)
+
+
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductVersionImageViewSet(viewsets.ModelViewSet):

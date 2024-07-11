@@ -24,10 +24,22 @@ class ImageInline(admin.TabularInline):
     extra = 2
 
 
+@admin.register(SpecialDiscount)
+class SpecialDiscountAdmin(admin.ModelAdmin):
+    list_display = ('id','product_version', 'discount_type', 'value', 'created_at', 'is_active')
+    list_filter = ('created_at', 'discount_type')
+    list_editable = ('value','product_version', 'is_active')
+    search_fields = ('product_version__title',)
+
+
+class SpecialDiscountInline(admin.TabularInline):
+    model = SpecialDiscount
+    extra = 1
+
 
 @admin.register(ProductVersion)
 class ProductAdmin(TranslationAdmin):
-    list_display = ('title', 'id', 'get_photo','brand','subcategory', 'price','discount', 'get_discounted_price', 'get_cat','get_sizes' )
+    list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand','subcategory', 'get_cat','get_sizes' )
     list_filter = ["subcategory", "brand", "size", 'color']
     list_display_links = ['id', "title", "get_photo"] 
     list_editable = ['price', "brand", 'subcategory', 'discount']
@@ -40,22 +52,37 @@ class ProductAdmin(TranslationAdmin):
     #         'fields': ('subcategory', 'brand', 'size','color' ,'tags')
     #     }),
     # )
-    inlines = [ImageInline]
+    inlines = [ImageInline, SpecialDiscountInline]
 
 
     def get_sizes(self, obj):
         size_arr = [p.title for p in obj.size.all()]
-
         return size_arr
+    get_sizes.short_description = 'Sizes'
+
+    def get_special_discount(self, obj):
+        special_discount = obj.special_discounts.filter(is_active=True).first()
+        if special_discount:
+            return f'{special_discount.value} {special_discount.discount_type}'
+        else:
+            return 'No Daily Special Discount'
+    get_special_discount.short_description = 'Daily Special Discount'
     
     def get_cat(self, obj):
         return obj.subcategory.category.title
+    get_cat.short_description = 'Category'
+    
+    
+    def get_discounted_price(self, obj):
+        return obj.get_discounted_price()
+    get_discounted_price.short_description = 'Discounted Price'
 
 
     def get_photo(self, obj):
         if obj.cover_image:
             img_str = f"<img src='{obj.cover_image.url}' width='100px'>"
         return format_html(img_str)
+    get_photo.short_description = 'Cover Image'
 
 
 
