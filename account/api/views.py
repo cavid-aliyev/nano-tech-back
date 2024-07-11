@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth.hashers import make_password
+import random
 from .serializers import (
     RegisterSerializer, UserSerializer, LoginSerializer,
     OTPVerificationSerializer, PasswordResetRequestSerializer,
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer, PasswordResetOTPVerificationSerializer
 )
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -72,14 +74,35 @@ class PasswordResetRequestView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
         user = User.objects.get(email=email)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = token_generator.make_token(user)
-        reset_link = f'http://example.com/reset_password/{uid}/{token}/'
-        # Send reset link via email
-        subject = 'Password Reset'
-        message = f'Click the link to reset your password: {reset_link}'
-        send_mail(subject, message, 'from@example.com', [email])
+        user.otp = str(random.randint(100000, 999999))
+        user.is_active = False
+        user.save()
+        # Send OTP via email
+        subject = 'Password reset otp code'
+        message = f'{user.get_full_name()}, your password reset otp code is {user.otp}'
+        user.email_user(subject, message)
         return Response({"detail": "Password reset link sent"}, status=status.HTTP_200_OK)
+
+
+class PasswordResetOTPVerificationView(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PasswordResetOTPVerificationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # # Send email
+        # subject = 'Reset Password'
+        # message = 'You can set new password now.'
+        # from_email = 'your_email@example.com'
+        # recipient_list = [user.email]
+
+        # send_mail(subject, message, from_email, recipient_list)
+
+        return Response({"detail": "You can reset new password"}, status=status.HTTP_200_OK)
+
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [permissions.AllowAny]

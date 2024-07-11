@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.core.mail import send_mail
 import random
 from datetime import datetime
 
@@ -47,7 +48,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         # Send OTP via email
         subject = 'Your account activation code'
-        message = f'Your activation code is {user.otp}'
+        message = f'{user.get_full_name()}, your activation code is {user.otp}'
         user.email_user(subject, message)
         return user
 
@@ -118,25 +119,71 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             raise serializers.ValidationError("No user is associated with this email address.")
         return value
 
-class PasswordResetConfirmSerializer(serializers.Serializer):
-    new_password = serializers.CharField(write_only=True)
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
+class PasswordResetOTPVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
 
     def validate(self, data):
+        email = data.get('email')
+        otp = data.get('otp')
         try:
-            uid = force_str(urlsafe_base64_decode(data['uidb64']))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError("Invalid token or user ID")
-
-        if not token_generator.check_token(user, data['token']):
-            raise serializers.ValidationError("Invalid token")
-
+            user = User.objects.get(email=email, otp=otp)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid OTP or email")
         return data
 
     def save(self):
-        uid = self.validated_data['uidb64']
-        user = User.objects.get(pk=force_str(urlsafe_base64_decode(uid)))
-        user.set_password(self.validated_data['new_password'])
+        email = self.validated_data['email']
+        user = User.objects.get(email=email)
+        # user.is_active = True
+        user.otp = ''
         user.save()
+        return user
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    new_password = serializers.CharField(write_only=True)
+    new_password_confirm = serializers.CharField(write_only=True)
+
+    # def validate(self, data):
+    #     try:
+    #         uid = force_str(urlsafe_base64_decode(data['uidb64']))
+    #         user = User.objects.get(pk=uid)
+    #     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+    #         raise serializers.ValidationError("Invalid token or user ID")
+
+    #     if not token_generator.check_token(user, data['token']):
+    #         raise serializers.ValidationError("Invalid token")
+
+    #     return data
+    
+    def validate(self, data):
+        email = data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid email")
+        return data
+
+    def save(self):
+        # uid = self.validated_data['uidb64']
+        # user = User.objects.get(pk=force_str(urlsafe_base64_decode(uid)))
+        email = self.validated_data['email']
+        new_password = self.validated_data['new_password']
+        new_password_confirm = self.validated_data['new_password_confirm']
+        user = User.objects.get(email=email)
+        if new_password == new_password_confirm:
+            user.set_password(self.validated_data['new_password'])
+            user.is_active = True
+            user.save()
+
+            # Send email
+            subject = 'Password Reset Successfully'
+            message = 'Your account password is reset successfully.'
+            from_email = 'your_email@example.com'
+            recipient_list = [user.email]
+            send_mail(subject, message, from_email, recipient_list)
+        else:
+            raise serializers.ValidationError("Passwords do not match")
+        
