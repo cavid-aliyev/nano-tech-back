@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import status
 from blog.models import Blog
 from blog.serializers import BlogSerializer, ChangeBlogSerializer
 
@@ -37,7 +38,7 @@ class BlogApiView(APIView):
     )
     def get(self, request):
         blogs = Blog.objects.all()
-        serializer = BlogSerializer(blogs, many=True)
+        serializer = BlogSerializer(blogs, many=True, context={'request': request})
         return Response(serializer.data)
 
     @extend_schema(

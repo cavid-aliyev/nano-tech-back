@@ -238,7 +238,7 @@ def product_detail(request, slug):
 
     if request.method == 'GET':
         # Serialize the main product
-        serializer = ProductVersionListSerializer(product)
+        serializer = ProductVersionListSerializer(product, context={'request': request})
         data = serializer.data
 
         # Fetch similar products (same category, excluding the current product)

@@ -12,4 +12,5 @@ class ChangeBlogSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "content",
+            "image",
         ]

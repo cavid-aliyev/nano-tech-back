@@ -10,6 +10,7 @@ class BlogSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "content",
+            "image",
             "category",
             "review_count",
             "created_at",
