@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import status
 
 from blog.models import Blog
-from blog.serializers import BlogSerializer, ChangeBlogSerializer
+from blog.serializers import BlogListSerializer,BlogCreateSerializer, ChangeBlogSerializer
 
 
 class DeleteBlogApiView(DestroyAPIView):
