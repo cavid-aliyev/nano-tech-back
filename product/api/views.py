@@ -206,6 +206,8 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = self.filter_queryset(queryset)
+
         is_new = self.request.query_params.get('is_new')
         top_sales = self.request.query_params.get('top_sales', None)
         discount = self.request.query_params.get('discount', None)
@@ -260,33 +262,12 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     
 
     def list(self, request, *args, **kwargs):
-        # queryset = self.filter_queryset(self.get_queryset())
         queryset = self.get_queryset()
-        # filterset = self.filterset_class(request.GET, queryset=queryset)
-        # if filterset.is_valid():
-        #     queryset = filterset.qs
-
-        # If the queryset is a list (sorted), handle pagination manually
-        # if isinstance(queryset, list):
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 12))
         start = (page - 1) * page_size
         end = start + page_size
         paginated_queryset = queryset[start:end]
-        # else:
-        #     queryset = self.filter_queryset(queryset)
-        #     page = self.paginate_queryset(queryset)
-        #     if page is not None:
-        #         serializer = self.get_serializer(page, many=True)
-        #         return self.get_paginated_response(serializer.data)
-        #     paginated_queryset = queryset
-
-        # page = int(request.GET.get('page', 1))
-        # page_size = int(request.GET.get('page_size', 10))
-        # start = (page - 1) * page_size
-        # end = start + page_size
-
-        # paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
         return Response(serializer.data)
 
