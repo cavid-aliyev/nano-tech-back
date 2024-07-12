@@ -206,6 +206,9 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = super().get_queryset()
+        if self.action == 'retrieve':
+            return queryset
+        
         queryset = self.filter_queryset(queryset)
 
         is_new = self.request.query_params.get('is_new')
@@ -218,7 +221,9 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         brand_ids = self.request.query_params.get('brand_id')
         category_ids = self.request.query_params.get('category_id')
         processor = self.request.query_params.get('processor')
+
         products = list(queryset)
+
         if ordering == "price" or ordering == "-price" or ordering == "newest" or ordering == "title":
             if ordering == "price":  # evvelce ucuz
                 # Fetch all products and sort them in Python
@@ -246,18 +251,19 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
             products = products[:1]
         if brand_ids:
             brand_ids = list(map(int, brand_ids.split(',')))  # Convert comma-separated string to a list of integers
-            print(brand_ids, "brand_ids------")
+            # print(brand_ids, "brand_ids------")
             products = [product for product in products if product.brand.id in brand_ids]
         if category_ids:
             category_ids = list(map(int, category_ids.split(',')))
-            print(category_ids, "category_ids------")
+            # print(category_ids, "category_ids------")
             products = [product for product in products if product.subcategory.category.id in category_ids]
         if processor:
             processor_titles = list(map(str, processor.split(',')))
-            print(processor_titles, "processor_titles------")
+            # print(processor_titles, "processor_titles------")
             # products = [product for product in products if product.specifications.processor in processor_titles]
         
         return products
+        # return queryset.filter(pk__in=[product.pk for product in products])
         
     
 
@@ -287,7 +293,7 @@ def product_detail(request, slug):
     try:
         product = ProductVersion.objects.get(slug=slug)
     except ProductVersion.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'error': 'Product not found'})
 
     if request.method == 'GET':
         # Serialize the main product
