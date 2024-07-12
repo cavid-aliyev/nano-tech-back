@@ -261,11 +261,28 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
             processor_titles = list(map(str, processor.split(',')))
             # print(processor_titles, "processor_titles------")
             # products = [product for product in products if product.specifications.processor in processor_titles]
+            
         
         return products
         # return queryset.filter(pk__in=[product.pk for product in products])
         
-    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        # Fetch similar products (example logic, modify as needed)
+        similar_products = ProductVersion.objects.filter(
+            subcategory__category=instance.subcategory.category
+        ).exclude(id=instance.id)  # Fetch the top 3 similar products
+        
+        response_data = serializer.data
+        if similar_products:
+            similar_products_serializer = ProductVersionListSerializer(similar_products, many=True)
+            response_data['similar_products'] = similar_products_serializer.data
+        else:
+            response_data['similar_products'] = []
+
+        return Response(response_data)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
