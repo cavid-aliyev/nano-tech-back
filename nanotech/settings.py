@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'rest_framework_simplejwt',
+    
     'account',
     'product',
     'checkout',
