@@ -3,7 +3,7 @@ from django.urls import include
 from rest_framework.routers import DefaultRouter
 from .views import ( 
     BrandViewSet, ProductTagViewSet, 
-    ProductCategoryViewSet, ProductSubcategoryViewSet, 
+    ProductCategoryViewSet, 
     ProductColorViewSet, ProductVersionViewSet, ProductVersionImageViewSet, 
     product_detail, purchase_product,top_sales_products, SliderViewSet, TopBrandViewSet,
     set_language_api, get_language_options_api )
@@ -15,7 +15,7 @@ router.register(r'brands', BrandViewSet)
 router.register(r'top-brands', TopBrandViewSet)
 router.register(r'tags', ProductTagViewSet)
 router.register(r'categories', ProductCategoryViewSet)
-router.register(r'subcategories', ProductSubcategoryViewSet)
+# router.register(r'subcategories', ProductSubcategoryViewSet)
 # router.register(r'products', ProductViewSet)
 router.register(r'colors', ProductColorViewSet)
 router.register(r'products', ProductVersionViewSet)

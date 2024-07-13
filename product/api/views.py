@@ -14,12 +14,12 @@ from drf_spectacular.types import OpenApiTypes
 from django.db.models import QuerySet
 
 from product.models import (Brand, TopBrand, 
-    ProductTag, ProductCategory, ProductSubcategory, 
+    ProductTag, Category,
     ProductColor, ProductVersion, ProductVersionImage, Slider)
 from .serializers import ( 
     BrandSerializer, ProductTagSerializer, ProductTagCreateSerializer, 
-    ProductCategoryListSerializer, ProductCategoryCreateSerializer, 
-    ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
+    ProductCategoryListSerializer, ProductCategoryCreateSerializer, ProductCategoryRetrieveSerializer,
+    # ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
     ProductColorSerializer, ProductColorCreateSerializer,
     ProductVersionListSerializer, ProductVersionCreateSerializer, ProductVersionImageSerializer, 
     SliderSerializer, TopBrandSerializer)
@@ -132,26 +132,35 @@ class ProductTagViewSet(viewsets.ModelViewSet):
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductCategoryViewSet(viewsets.ModelViewSet):
-    queryset = ProductCategory.objects.all()
+    queryset = Category.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action == 'list':
             return ProductCategoryListSerializer
+        if self.action == 'retrieve':
+            return ProductCategoryRetrieveSerializer
         if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
             return  ProductCategoryCreateSerializer
         return ProductCategoryListSerializer  # default serializer
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            categories = Category.objects.filter(parent_category=None)
+            return categories
+        return queryset
 
 
-@permission_classes([IsAuthenticatedOrReadOnly])
-class ProductSubcategoryViewSet(viewsets.ModelViewSet):
-    queryset = ProductSubcategory.objects.all()
+# @permission_classes([IsAuthenticatedOrReadOnly])
+# class ProductSubcategoryViewSet(viewsets.ModelViewSet):
+#     queryset = ProductSubcategory.objects.all()
 
-    def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
-            return ProductSubcategoryListSerializer
-        if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
-            return  ProductSubcategoryCreateSerializer
-        return ProductSubcategoryListSerializer  # default serializer
+#     def get_serializer_class(self):
+#         if self.action == 'list' or self.action == 'retrieve':
+#             return ProductSubcategoryListSerializer
+#         if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
+#             return  ProductSubcategoryCreateSerializer
+#         return ProductSubcategoryListSerializer  # default serializer
 
 # class ProductViewSet(viewsets.ModelViewSet):
 #     queryset = Product.objects.all()
@@ -255,8 +264,19 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
             products = [product for product in products if product.brand.id in brand_ids]
         if category_ids:
             category_ids = list(map(int, category_ids.split(',')))
-            # print(category_ids, "category_ids------")
-            products = [product for product in products if product.subcategory.category.id in category_ids]
+            print(category_ids, "category_ids------")
+
+            filtered_products = []
+            for product in products:
+                # Include products from the specified categories
+                if product.category.id in category_ids:
+                    filtered_products.append(product)
+                
+                # Include products from subcategories of the specified main categories
+                if product.category.parent_category and product.category.parent_category.id in category_ids:
+                    filtered_products.append(product)
+        
+            products = filtered_products
         if processor:
             processor_titles = list(map(str, processor.split(',')))
             # print(processor_titles, "processor_titles------")
@@ -272,7 +292,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         
         # Fetch similar products (example logic, modify as needed)
         similar_products = ProductVersion.objects.filter(
-            subcategory__category=instance.subcategory.category
+            category=instance.category
         ).exclude(id=instance.id)  # Fetch the top 3 similar products
         
         response_data = serializer.data
@@ -318,7 +338,7 @@ def product_detail(request, slug):
         data = serializer.data
 
         # Fetch similar products (same category, excluding the current product)
-        similar_products = ProductVersion.objects.filter(subcategory__category=product.subcategory.category).exclude(slug=product.slug)
+        similar_products = ProductVersion.objects.filter(category=product.category).exclude(slug=product.slug)
         similar_serializer = ProductVersionListSerializer(similar_products, many=True)
         data['similar_products'] = similar_serializer.data
 

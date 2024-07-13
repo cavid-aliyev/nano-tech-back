@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from django.contrib.auth import get_user_model
 
 
@@ -14,10 +15,23 @@ class ShoppingCart(models.Model):
     def __str__(self):
         return f'{self.user.username} - Cart'
 
+    # @property
+    # def get_total(self):
+    #     items = self.cart_items.all()
+        return sum([item.get_total for item in items])
+    
     @property
     def get_total(self):
-        items = self.cart_items.all()
-        return sum([item.get_total for item in items])
+        return sum(item.product_version.price * item.quantity for item in self.cart_items.all())
+
+    @property
+    def get_discount_amount(self):
+        # Implement your discount calculation logic here
+        return sum((item.product_version.price - item.product_version.get_discounted_price() )* item.quantity for item in self.cart_items.all())
+
+    @property
+    def get_final_amount(self):
+        return self.get_total - self.get_discount_amount
 
 class CartItem(models.Model):
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='cart_items')
@@ -31,7 +45,15 @@ class CartItem(models.Model):
 
     @property
     def get_total(self):
-        return self.quantity * self.product_version.price
+        return int(self.quantity) * (self.product_version.price)
+
+    @property
+    def get_discount_amount(self):
+        return int(self.quantity) * (self.product_version.price - self.product_version.get_discounted_price())
+
+    @property
+    def get_final_amount(self):
+        return self.get_total - self.get_discount_amount
 
 
 class BillingAddress(models.Model):

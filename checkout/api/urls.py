@@ -1,7 +1,7 @@
 from django.urls import path
-from checkout.api.views import AddToWishlistAPIView, WishlistItemsAPIView, wishlist_read_del
+from checkout.api.views import AddToWishlistAPIView, WishlistItemsAPIView, wishlist_read_del, CartApiView, AddToCartItemView, cart_read_del
 
-from .views import ShoppingCartAPIView, CartItemCreateAPIView, CartItemDeleteAPIView
+from .views import CartItemDeleteAPIView
 
 app_name = "checkoutapi"
 urlpatterns = [
@@ -9,8 +9,11 @@ urlpatterns = [
     path('add-to-wishlist/', AddToWishlistAPIView, name='add_to_wishlist'),
     path('remove-from-wishlist/<int:pk>/', wishlist_read_del, name="wishlist_read_del"),
 
-    path('shopping-cart/', ShoppingCartAPIView.as_view(), name='shopping-cart-list-create'),
-    path('cart-items/', CartItemCreateAPIView.as_view(), name='cart-item-list-create'),
-    path('cart-items/<int:pk>/', CartItemDeleteAPIView.as_view(), name='cart-item-delete-update'),
+    # path('get-shopping-cart/', ShoppingCartAPIView.as_view(), name='shopping-cart-list-create'),
+    # path('add-to-cart/', CartItemCreateAPIView.as_view(), name='cart-item-list-create'),
+    # path('delete-from-cart/<int:pk>/', CartItemDeleteAPIView.as_view(), name='cart-item-delete-update'),
 
+    path('get-shopping-cart/', CartApiView.as_view(), name='get-shopping-cart'),
+    path('add-to-cart/', AddToCartItemView, name='add-to-cart'),
+    path('remove-from-cart/<int:pk>/', cart_read_del, name='cart-item-delete'),
 ] 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from product.models import (
         Brand, TopBrand,ProductTag, 
-        ProductCategory, ProductSubcategory, ProductColor, 
+        Category, ProductColor, 
         ProductSize, ProductVersion, ProductVersionImage, 
         Discount, Slider, SpecialDiscount, ProductDetail)
 from decimal import Decimal
@@ -36,41 +36,83 @@ class ProductTagCreateSerializer(serializers.ModelSerializer):
 
 class ProductCategoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductCategory
-        fields = ['title']
+        model = Category
+        fields = ['title', 'parent_category']
 
 
-class ProductSubcategoryListforCatSerializer(serializers.ModelSerializer):
+class CategoryBrandSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductSubcategory
-        fields = ['id','title']
+        model = Brand
+        fields = ['id', 'title']
+
+class SubcategoryListforCatSerializer(serializers.ModelSerializer):
+    brands = CategoryBrandSerializer(many=True)
+    class Meta:
+        model = Category
+        fields = ['id','title', "brands"]
 
 
 class ProductCategoryListSerializer(serializers.ModelSerializer):
-    sub_categories = ProductSubcategoryListforCatSerializer(many=True, source='subcategories')
+    sub_categories = SubcategoryListforCatSerializer(many=True, source='child_cats')
+    brands = serializers.SerializerMethodField()
     class Meta:
-        model = ProductCategory
-        fields = ['id', 'title', 'is_active', 'sub_categories']   
+        model = Category
+        fields = ['id', 'title', 'sub_categories', "brands"]
+        # fields = ['id', 'title', 'is_active']   
 
+    def get_brands(self, obj):
+        # Only return brands if the category has no child categories
+        if not obj.child_cats.exists():
+            return CategoryBrandSerializer(obj.brands.all(), many=True).data
+        else:
+            brands = set(obj.brands.all())
+            for subcategory in obj.child_cats.all():
+                brands.update(subcategory.brands.all())
+            return CategoryBrandSerializer(brands, many=True).data
+
+class ProductCategoryRetrieveSerializer(serializers.ModelSerializer):
+    sub_categories = SubcategoryListforCatSerializer(many=True, source='child_cats')
+    brands = serializers.SerializerMethodField()
+    main_category = serializers.SerializerMethodField()
+    class Meta:
+        model = Category
+        fields = ['id', 'title', 'sub_categories', "brands", "main_category"]
+        # fields = ['id', 'title', 'is_active']   
+
+    def get_brands(self, obj):
+        # Only return brands if the category has no child categories
+        if not obj.child_cats.exists():
+            return CategoryBrandSerializer(obj.brands.all(), many=True).data
+        else:
+            brands = set(obj.brands.all())
+            for subcategory in obj.child_cats.all():
+                brands.update(subcategory.brands.all())
+            return CategoryBrandSerializer(brands, many=True).data
+
+    def get_main_category(self, obj):
+        if obj.parent_category:
+            return ProductCategoryListforSubcatSerializer(Category.objects.filter(title=obj.parent_category.title).first()).data
+        return "Main category"
+    
 
 class ProductCategoryListforSubcatSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductCategory
+        model = Category
         fields = ['id', 'title']   
 
 
-class ProductSubcategoryListSerializer(serializers.ModelSerializer):
-    # category = serializers.CharField(source = 'category.title')
-    category = ProductCategoryListforSubcatSerializer()
+# class ProductSubcategoryListSerializer(serializers.ModelSerializer):
+#     # category = serializers.CharField(source = 'category.title')
+#     category = ProductCategoryListforSubcatSerializer()
 
-    class Meta:
-        model = ProductSubcategory
-        fields = ['id', 'title', 'category']
+#     class Meta:
+#         model = ProductSubcategory
+#         fields = ['id', 'title', 'category']
 
-class ProductSubcategoryCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductSubcategory
-        fields = ['title', 'category']
+# class ProductSubcategoryCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductSubcategory
+#         fields = ['title', 'category']
 
 
 class ProductColorSerializer(serializers.ModelSerializer):
@@ -148,6 +190,19 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         fields = ( 'id', 'processor', 'screen_diagonal', 'video_card', 'ram', 'memory', 'screen_indicators', 'operating_system')
 
 
+class ProductCategoryListforProductSerializer(serializers.ModelSerializer):
+    # sub_categories = ProductSubcategoryListforCatSerializer(many=True, source='child_cats')
+    main_category = serializers.SerializerMethodField()
+    class Meta:
+        model = Category
+        fields = ['id', 'title',  "main_category"]
+    
+    def get_main_category(self, obj):
+        if obj.parent_category:
+            return ProductCategoryListforProductSerializer(Category.objects.filter(title=obj.parent_category.title).first()).data
+        return "Main category"
+
+
 class ProductVersionListSerializer(serializers.ModelSerializer):
     discount = DiscountSerializer(required=False)
     discounted_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -158,7 +213,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
     prod_images = ProductImagesListSerializer(many=True, source='images')
     brand = ProductBrandListSerializer()
     # subcategory = serializers.CharField(source = 'subcategory.title')
-    subcategory = ProductSubcategoryListSerializer()
+    category = ProductCategoryListforProductSerializer()
     # special_discount = SpecialDiscountSerializer(source='special_discounts',many=True, read_only=True)
     has_daily_special_discount = serializers.SerializerMethodField()
     product_details = ProductDetailSerializer(source='specifications', read_only=True)
@@ -168,7 +223,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
         fields = ['id','slug', 
                 'title','description', 'price', 'discount', 'discounted_price', "has_daily_special_discount",
                 'product_details', 
-                'brand','subcategory','size','color', 'tags',
+                'brand','category','size','color', 'tags',
                 'sales', 'stock', 'is_active', 'is_new',
                 'cover_image', 'prod_images', 'created_at', 'updated_at']
     
@@ -206,7 +261,7 @@ class ProductVersionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVersion
         fields = ['title', 'description', 
-                  'brand', 'subcategory', 
+                  'brand', 'category', 
                    'price', 'discount', 'stock', 
                   'cover_image']  
     

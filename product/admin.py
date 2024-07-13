@@ -9,7 +9,7 @@ from django.utils.html import format_html
 
 # admin.site.register(ProductVersion)
 admin.site.register(ProductVersionImage)
-# admin.site.register(ProductCategory)
+# admin.site.register(Category)
 # admin.site.register(ProductSubcategory)
 # admin.site.register(ProductColor)
 # admin.site.register(ProductTag)
@@ -53,11 +53,11 @@ class ProductDetailInline(admin.StackedInline):  # Use StackedInline or TabularI
 
 @admin.register(ProductVersion)
 class ProductAdmin(TranslationAdmin):
-    list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand','subcategory', 'get_cat','get_sizes' )
-    list_filter = ["subcategory", "brand", "size", 'color']
+    list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand',"category","get_main_cat", 'get_sizes' )
+    list_filter = ["brand", "size", 'color', "category"]
     list_display_links = ['id', "title", "get_photo"] 
-    list_editable = ['price', "brand", 'subcategory', 'discount']
-    search_fields = ['title', 'description', 'subcategory__title', 'brand__title']
+    list_editable = ['price', "brand",  'discount', "category"]
+    search_fields = ['title', 'description',  'brand__title', 'category__title' ]
     # fieldsets = (
     #     ('info', {
     #         'fields': ('title', 'cover_image',  'description','price', 'slug')
@@ -82,9 +82,12 @@ class ProductAdmin(TranslationAdmin):
             return 'No Daily Special Discount'
     get_special_discount.short_description = 'Daily Special Discount'
     
-    def get_cat(self, obj):
-        return obj.subcategory.category.title
-    get_cat.short_description = 'Category'
+    def get_main_cat(self, obj):
+        if obj.category.parent_category:
+            return obj.category.parent_category.title
+        else:
+            return obj.category.title
+    get_main_cat.short_description = 'Main Category'
     
     
     def get_discounted_price(self, obj):
@@ -97,6 +100,13 @@ class ProductAdmin(TranslationAdmin):
             img_str = f"<img src='{obj.cover_image.url}' width='100px'>"
         return format_html(img_str)
     get_photo.short_description = 'Cover Image'
+
+    def save_model(self, request, obj, form, change):
+        # Check if the category exists for the given brand
+        if obj.brand and obj.category:
+            obj.category.brands.add(obj.brand)
+        
+        super().save_model(request, obj, form, change)
 
 
 
@@ -127,25 +137,44 @@ class BrandAdmin(TranslationAdmin):
         return format_html(img_str)
 
 
-@admin.register(ProductCategory)
+@admin.register(Category)
 class ProductCategoryAdmin(TranslationAdmin):
-    list_display = ["id", "title", "get_subcats" ,"is_active"]
+    list_display = ["id", "title", "get_parent_category", "get_brands"]
     list_display_links = ['id', "title"] 
-    list_editable = ["is_active"]
+    # list_editable = ["is_active"]
     list_per_page = 10
 
-    def get_subcats(self, obj):
-        subcats_arr = [p.title for p in obj.subcategories.all()]
+    def get_brands(self, obj):
+        # If the category is a main category
+        if not obj.parent_category:
+            if obj.child_cats.all():
+                # Gather brands of the subcategories
+                brands = set(obj.brands.all())
+                for subcategory in obj.child_cats.all():
+                    brands.update(subcategory.brands.all())
+            else:
+                brands = obj.brands.all()
+        else:
+            # Only gather brands of the current category if it is a subcategory
+            brands = obj.brands.all()
+        
+        # Create a string of brand titles separated by commas
+        brands_str = ", ".join(brand.title for brand in brands)
+        return brands_str
+    get_brands.short_description = 'Brands'
+    
 
-        return subcats_arr
+    def get_parent_category(self, obj):
+        return obj.get_parent()
+    get_parent_category.short_description = 'Main Category'
 
 
-@admin.register(ProductSubcategory)
-class ProductSubcategoryAdmin(TranslationAdmin):
-    list_display = ["id", "title", "category"]
-    list_display_links = ['id', "title"] 
-    list_editable = ["category"]
-    list_per_page = 10
+# @admin.register(ProductSubcategory)
+# class ProductSubcategoryAdmin(TranslationAdmin):
+#     list_display = ["id", "title", "category"]
+#     list_display_links = ['id', "title"] 
+#     list_editable = ["category"]
+#     list_per_page = 10
 
 
 @admin.register(ProductColor)

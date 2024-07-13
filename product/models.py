@@ -65,30 +65,50 @@ class ProductTag(models.Model):
         ordering = ["id"]
 
 
-class ProductCategory(models.Model):
-    title = models.CharField(max_length=200)
+class Category(DateAbstractModel):
+    title = models.CharField(max_length=50)
+    parent_category = models.ForeignKey('self', null=True, blank=True, related_name='child_cats', on_delete=models.CASCADE)
+    brands = models.ManyToManyField(Brand)
+   
     is_active = models.BooleanField(default=True)
-  
+    slug = models.SlugField(null=True, blank=True)
 
-    def __str__(self):
-        return self.title
-    
     class Meta:
+        verbose_name_plural = 'Categories'
         verbose_name = "Category"
-        verbose_name_plural = "Categories"
-        ordering = ["id"]
-    
-class ProductSubcategory(models.Model):
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='subcategories')
-    title = models.CharField(max_length=100)
+        ordering = ['id']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
     
-    class Meta:
-        verbose_name = "Subcategory"
-        verbose_name_plural = "Subcategories"
-        ordering = ["id"]
+    def get_parent(self) -> str:
+        if self.parent_category:
+            return self.parent_category.title
+        else:
+            return "Main Category"
+        
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title) + '-' + str(datetime.now().timestamp()).replace('.', '')
+        super(Category, self).save(*args, **kwargs)
+        self.update_parent_brands()
+
+    def update_parent_brands(self):
+        if self.parent_category:
+            for brand in self.brands.all():
+                self.parent_category.brands.add(brand)
+            self.parent_category.save()
+
+# class ProductSubcategory(models.Model):
+#     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='subcategories')
+#     title = models.CharField(max_length=100)
+
+#     def __str__(self):
+#         return self.title
+    
+#     class Meta:
+#         verbose_name = "Subcategory"
+#         verbose_name_plural = "Subcategories"
+#         ordering = ["id"]
     
 
 
@@ -152,7 +172,7 @@ class Discount(models.Model):
 
 class ProductVersion(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='product_versions')
-    subcategory = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE, related_name='product_versions')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='product_versions', null=True, blank=True)
     color = models.ManyToManyField(ProductColor, blank=True)
     size = models.ManyToManyField(ProductSize, blank=True)
     title = models.CharField(max_length=200)
