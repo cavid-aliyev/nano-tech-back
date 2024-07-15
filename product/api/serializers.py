@@ -3,14 +3,15 @@ from product.models import (
         Brand, TopBrand,ProductTag, 
         Category, ProductColor, 
         ProductSize, ProductVersion, ProductVersionImage, 
-        Discount, Slider, SpecialDiscount, ProductDetail)
+        Discount, SpecialDiscount, ProductDetail)
 from decimal import Decimal
 from django.utils import timezone
 
-class SliderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Slider
-        fields = '__all__'
+
+# class SliderSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Slider
+#         fields = '__all__'
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -49,7 +50,7 @@ class SubcategoryListforCatSerializer(serializers.ModelSerializer):
     brands = CategoryBrandSerializer(many=True)
     class Meta:
         model = Category
-        fields = ['id','title', "brands"]
+        fields = ['id','title', "brands", "is_active", "icon"]
 
 
 class ProductCategoryListSerializer(serializers.ModelSerializer):
@@ -57,7 +58,7 @@ class ProductCategoryListSerializer(serializers.ModelSerializer):
     brands = serializers.SerializerMethodField()
     class Meta:
         model = Category
-        fields = ['id', 'title', 'sub_categories', "brands"]
+        fields = ['id', 'title', 'sub_categories', "brands", "is_active", "icon"]
         # fields = ['id', 'title', 'is_active']   
 
     def get_brands(self, obj):
@@ -76,7 +77,7 @@ class ProductCategoryRetrieveSerializer(serializers.ModelSerializer):
     main_category = serializers.SerializerMethodField()
     class Meta:
         model = Category
-        fields = ['id', 'title', 'sub_categories', "brands", "main_category"]
+        fields = ['id', 'title', 'sub_categories', "brands", "main_category", "is_active", "icon"]
         # fields = ['id', 'title', 'is_active']   
 
     def get_brands(self, obj):
@@ -98,7 +99,7 @@ class ProductCategoryRetrieveSerializer(serializers.ModelSerializer):
 class ProductCategoryListforSubcatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title']   
+        fields = ['id', 'title', "is_active"]   
 
 
 # class ProductSubcategoryListSerializer(serializers.ModelSerializer):

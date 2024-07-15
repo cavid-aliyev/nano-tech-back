@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'home',
     'product',
     "blog.apps.BlogConfig",
     "social_media.apps.SocialMediaConfig",
@@ -305,10 +306,28 @@ CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Api System",
-    "DESCRIPTION": "Test",
+    "TITLE": "Nanotech API",
+    'DESCRIPTION': 'API for Nanotech',
     "VERSION": "1.0",
+    'LICENSE': {
+        'name': 'BSD License',
+        'url': 'https://opensource.org/licenses/BSD-3-Clause',
+    },
     "SCHEMA_PATH_FUNC": "main.views.schema_view",
     "COMPONENT_SPLIT_REQUEST": True,
 }
 
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'Nanotech API',
+#     'DESCRIPTION': 'API for Nanotech',
+#     'VERSION': '1.0.0',
+#     'SERVE_INCLUDE_SCHEMA': False,
+#     'CONTACT': {
+#         'email': 'contact@example.com',
+#     },
+#     'LICENSE': {
+#         'name': 'BSD License',
+#         'url': 'https://opensource.org/licenses/BSD-3-Clause',
+#     },
+#     'TERMS_OF_SERVICE': 'https://www.example.com/policies/terms/',
+# }

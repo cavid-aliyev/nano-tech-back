@@ -5,7 +5,7 @@ from .views import (
     BrandViewSet, ProductTagViewSet, 
     ProductCategoryViewSet, 
     ProductColorViewSet, ProductVersionViewSet, ProductVersionImageViewSet, 
-    product_detail, purchase_product,top_sales_products, SliderViewSet, TopBrandViewSet,
+    product_detail, purchase_product,top_sales_products, TopBrandViewSet,
     set_language_api, get_language_options_api )
 
 app_name = "product"
@@ -20,7 +20,7 @@ router.register(r'categories', ProductCategoryViewSet)
 router.register(r'colors', ProductColorViewSet)
 router.register(r'products', ProductVersionViewSet)
 router.register(r'product-images', ProductVersionImageViewSet)
-router.register(r'sliders', SliderViewSet)
+# router.register(r'sliders', SliderViewSet)
 
 
 urlpatterns = [

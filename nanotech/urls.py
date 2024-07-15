@@ -45,6 +45,7 @@ urlpatterns = [
 
     # path('product-api/', include('product.api.urls')),
 
+    path("core-api/", include('home.api.urls')),
     path('account-api/', include('account.api.urls')),
     # path('api/account/', include('allauth.urls')),
     # path('social-auth/', include('social_django.urls', namespace='social')),

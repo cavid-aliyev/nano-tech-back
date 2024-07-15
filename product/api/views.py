@@ -15,14 +15,14 @@ from django.db.models import QuerySet
 
 from product.models import (Brand, TopBrand, 
     ProductTag, Category,
-    ProductColor, ProductVersion, ProductVersionImage, Slider)
+    ProductColor, ProductVersion, ProductVersionImage)
 from .serializers import ( 
     BrandSerializer, ProductTagSerializer, ProductTagCreateSerializer, 
     ProductCategoryListSerializer, ProductCategoryCreateSerializer, ProductCategoryRetrieveSerializer,
     # ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
     ProductColorSerializer, ProductColorCreateSerializer,
     ProductVersionListSerializer, ProductVersionCreateSerializer, ProductVersionImageSerializer, 
-    SliderSerializer, TopBrandSerializer)
+    TopBrandSerializer)
 from product.filters import ProductVersionFilter
 
 @api_view(['POST'])
@@ -58,7 +58,7 @@ def get_language_options():
     languages_info = []
     for lang_code, lang_name in available_languages:
         language_info = get_language_info(lang_code)
-        language_info['selected'] = lang_code == current_language
+        # language_info['selected'] = lang_code == current_language
         languages_info.append(language_info)
     
     return languages_info
@@ -102,10 +102,10 @@ def get_language_options_api(request):
     return JsonResponse({'languages': languages_info})
 
 
-@permission_classes([IsAuthenticatedOrReadOnly])
-class SliderViewSet(viewsets.ModelViewSet):
-    queryset = Slider.objects.all()
-    serializer_class = SliderSerializer
+# @permission_classes([IsAuthenticatedOrReadOnly])
+# class SliderViewSet(viewsets.ModelViewSet):
+#     queryset = Slider.objects.all()
+#     serializer_class = SliderSerializer
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class TopBrandViewSet(viewsets.ModelViewSet):

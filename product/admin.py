@@ -110,20 +110,6 @@ class ProductAdmin(TranslationAdmin):
 
 
 
-@admin.register(Slider)
-class SliderAdmin(admin.ModelAdmin):
-    list_display = ["id", "get_photo", "is_active", "created_at", "updated_at"]
-    list_filter = ["created_at", "updated_at"]
-    list_display_links = ['get_photo', 'id'] 
-    list_editable = ["is_active"]
-    # list_per_page = 10
-
-    def get_photo(self, obj):
-        if obj.slider_image:
-            img_str = f"<img src='{obj.slider_image.url}' width='100px'>"
-        return format_html(img_str)
-
-
 @admin.register(Brand)
 class BrandAdmin(TranslationAdmin):
     list_display = ["id", "title", "get_photo", "is_active"]
@@ -139,8 +125,8 @@ class BrandAdmin(TranslationAdmin):
 
 @admin.register(Category)
 class ProductCategoryAdmin(TranslationAdmin):
-    list_display = ["id", "title", "get_parent_category", "get_brands"]
-    list_display_links = ['id', "title"] 
+    list_display = ["id", "title", "get_photo", "get_parent_category", "get_brands"]
+    list_display_links = ['id', "title", "get_photo"] 
     # list_editable = ["is_active"]
     list_per_page = 10
 
@@ -167,6 +153,13 @@ class ProductCategoryAdmin(TranslationAdmin):
     def get_parent_category(self, obj):
         return obj.get_parent()
     get_parent_category.short_description = 'Main Category'
+
+    def get_photo(self, obj):
+        if obj.icon:
+            img_str = f"<img src='{obj.icon.url}' width='100px'>"
+            return format_html(img_str)
+        return "No Icon"
+    get_photo.short_description = 'Icon'
 
 
 # @admin.register(ProductSubcategory)

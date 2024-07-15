@@ -10,17 +10,17 @@ from decimal import Decimal
 from utils import DateAbstractModel
 
 
-class Slider(DateAbstractModel):
-    slider_image = ImageField(upload_to='slider_image')
-    is_active = models.BooleanField(default=True)
+# class Slider(DateAbstractModel):
+#     slider_image = ImageField(upload_to='slider_image')
+#     is_active = models.BooleanField(default=True)
 
-    def __str__(self):
-        return f"{self.id}'s slider obj"
+#     def __str__(self):
+#         return f"{self.id}'s slider obj"
 
-    class Meta:
-        verbose_name = "Slider"
-        verbose_name_plural = "Sliders"
-        ordering = ["id"]
+#     class Meta:
+#         verbose_name = "Slider"
+#         verbose_name_plural = "Sliders"
+#         ordering = ["id"]
 
 
 class Brand(models.Model):
@@ -69,6 +69,7 @@ class Category(DateAbstractModel):
     title = models.CharField(max_length=50)
     parent_category = models.ForeignKey('self', null=True, blank=True, related_name='child_cats', on_delete=models.CASCADE)
     brands = models.ManyToManyField(Brand)
+    icon = models.ImageField(upload_to='category_icons/', null=True, blank=True)  # New field for the category icon
    
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(null=True, blank=True)
