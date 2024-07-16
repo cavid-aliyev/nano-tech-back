@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from home.models import Slider, Banner
+from home.models import Slider
 
 
 class SliderSerializer(serializers.ModelSerializer):
@@ -8,7 +8,3 @@ class SliderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BannerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Banner
-        fields = '__all__'

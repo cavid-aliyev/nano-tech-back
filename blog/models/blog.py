@@ -7,6 +7,7 @@ from .category import Category
 
 class Blog(DateAbstractModel):
     title = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255)
     content = RichTextField()
     image = models.ImageField(upload_to='blog_image', null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)

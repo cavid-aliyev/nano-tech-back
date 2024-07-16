@@ -74,6 +74,7 @@ urlpatterns += i18n_patterns(
 
     path('product-api/', include('product.api.urls')),
     path("blog-api/", include("blog.urls.apis")),
+    path("banner-api/", include("banner.api.urls")),
 
     prefix_default_language=True
 

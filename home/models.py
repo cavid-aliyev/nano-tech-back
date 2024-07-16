@@ -6,21 +6,6 @@ from django.db.models.fields.files import ImageField
 from utils import DateAbstractModel
 
 
-class Banner(DateAbstractModel):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = 'Home Page Banner'
-        verbose_name_plural = 'Home Page Banner'
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return self.title
-
-
-
 class Slider(DateAbstractModel):
     slider_image = ImageField(upload_to='slider_image')
     is_active = models.BooleanField(default=True)

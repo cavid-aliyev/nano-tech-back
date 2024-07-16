@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'home',
+    'banner',
     'product',
     "blog.apps.BlogConfig",
     "social_media.apps.SocialMediaConfig",
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     "corsheaders",
     'ckeditor',
     'django_ckeditor_5',
+    "ckeditor_uploader",
     "drf_spectacular",
     # "rosetta",
 ]
@@ -303,6 +305,16 @@ INTERNAL_IPS = [
 ]
 
 CKEDITOR_UPLOAD_PATH = "content/ckeditor/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        # 'toolbar': 'full',
+        # 'allowedContent': True,  # Allow all content
+        'filebrowserUploadUrl': '/ckeditor/upload/',
+        # 'versionCheck': False,
+    },
+}
+
 
 
 SPECTACULAR_SETTINGS = {

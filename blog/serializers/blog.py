@@ -14,6 +14,7 @@ class BlogListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "subtitle",
             "content",
             "image",
             "category",
@@ -29,6 +30,7 @@ class BlogCreateSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "subtitle",
             "content",
             "image",
             "category",

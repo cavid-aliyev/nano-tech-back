@@ -4,7 +4,7 @@ from blog.models import Blog, Category
 
 @register(Blog)
 class BlogTranslationOptions(TranslationOptions):
-    fields = ('title', "content")
+    fields = ('title', "subtitle", "content")
 
 
 @register(Category)

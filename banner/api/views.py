@@ -5,16 +5,12 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from drf_spectacular.types import OpenApiTypes
 
 
-from home.models import Slider
-from home.api.serializers import SliderSerializer
-
+from banner.models import Banner
+from .serializers import BannerSerializer
 
 @permission_classes([IsAuthenticatedOrReadOnly])
-class SliderViewSet(viewsets.ModelViewSet):
-    queryset = Slider.objects.all()
-    serializer_class = SliderSerializer
-
-
-
+class BannerViewSet(viewsets.ModelViewSet):
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
 
 
