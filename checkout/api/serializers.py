@@ -24,11 +24,13 @@ class WishlistProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         discounted_price = instance.get_discounted_price()
-        special_discounts = instance.special_discounts.filter(is_active=True).first()
-        if special_discounts:
+        # special_discounts = instance.special_discounts.filter(is_active=True).first()
+        if instance.has_active_special_discount():
+            special_discounts = instance.special_discounts.filter(is_active=True).first()
             data['discount'] = SpecialDiscountSerializer(special_discounts).data
             data['discounted_price'] = discounted_price
-        if instance.discount:
+        elif instance.discount:
+            data['discount'] = DiscountSerializer(instance.discount).data
             data['discounted_price'] = discounted_price
         else:
             data['discount'] = False
