@@ -43,9 +43,8 @@ class WishlistItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WishlistItem
-        fields = ('user', 'product')
+        fields = ('id', 'user', 'product')
     
-
 
 class WishlistItemCreateSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -61,8 +60,6 @@ class WishlistItemCreateSerializer(serializers.ModelSerializer):
         attrs["user"] = self.context["request"].user
         return super().validate(attrs)
             
-
-
 
 class ShoppingCartforCartItemSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -93,6 +90,7 @@ class CartItemReadSerializer(serializers.ModelSerializer):
         data['discount_amount'] = instance.get_discount_amount
         data['final_amount'] = instance.get_final_amount
         return data
+
 
 class CartItemReadforShoppingCartSerializer(serializers.ModelSerializer):
     # user = UserSerializer()
@@ -153,6 +151,7 @@ class CartItemCreateSerializer(serializers.ModelSerializer):
         except:
 
           return super().create(validated_data)
+
 
 class CartItemDeleteSerializer(serializers.ModelSerializer):
     class Meta:

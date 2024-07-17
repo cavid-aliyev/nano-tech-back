@@ -182,3 +182,34 @@ def cart_read_del(request, pk):
     else:
         return JsonResponse({'error': 'Item isnt in your cart'}, status=404)
 
+
+
+class IncrementCartItemQuantityView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, cart_item_id):
+        try:
+            cart_item = CartItem.objects.get(id=cart_item_id, cart__user=request.user)
+            cart_item.quantity += 1
+            cart_item.save()
+            serializer = CartItemReadSerializer(cart_item, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class DecrementCartItemQuantityView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, cart_item_id):
+        try:
+            cart_item = CartItem.objects.get(id=cart_item_id, cart__user=request.user)
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
+                serializer = CartItemReadSerializer(cart_item, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Quantity cannot be less than 1'}, status=status.HTTP_400_BAD_REQUEST)
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)

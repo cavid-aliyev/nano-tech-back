@@ -1,5 +1,7 @@
 from django.urls import path
-from checkout.api.views import AddToWishlistAPIView, WishlistItemsAPIView, wishlist_read_del, CartApiView, AddToCartItemView, cart_read_del
+from checkout.api.views import (AddToWishlistAPIView, WishlistItemsAPIView, wishlist_read_del, 
+                                CartApiView, AddToCartItemView, cart_read_del,
+                                IncrementCartItemQuantityView, DecrementCartItemQuantityView)
 
 from .views import CartItemDeleteAPIView
 
@@ -16,4 +18,7 @@ urlpatterns = [
     path('get-shopping-cart/', CartApiView.as_view(), name='get-shopping-cart'),
     path('add-to-cart/', AddToCartItemView, name='add-to-cart'),
     path('remove-from-cart/<int:pk>/', cart_read_del, name='cart-item-delete'),
+
+    path('increment-cart-item/<int:cart_item_id>/', IncrementCartItemQuantityView.as_view(), name='increment-cart-item'),
+    path('decrement-cart-item/<int:cart_item_id>/', DecrementCartItemQuantityView.as_view(), name='decrement-cart-item'),
 ] 
