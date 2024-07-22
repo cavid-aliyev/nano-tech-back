@@ -39,16 +39,24 @@ class SpecialDiscountInline(admin.TabularInline):
 
 
 @admin.register(ProductDetail)
-class ProductDetailAdmin(admin.ModelAdmin):
-    list_display = ['product', 'processor', 'screen_diagonal', 'video_card', 'ram', 'memory', 'screen_indicators', 'operating_system', 'created_at']
+class ProductDetailAdmin(TranslationAdmin):
+    list_display = ['product', 'detail_type', 'value']
     list_filter = ['created_at']
-    search_fields = ['product__title']
+    search_fields = ['product__title', 'detail_type__name', 'value']
 
 
-class ProductDetailInline(admin.StackedInline):  # Use StackedInline or TabularInline based on your preference
+# class ProductDetailInline(admin.StackedInline):  # Use StackedInline or TabularInline based on your preference
+#     model = ProductDetail
+#     can_delete = False  # Prevents deletion of associated ProductDetail when editing ProductVersion
+#     verbose_name_plural = 'Product Details'  # Displayed name for the inline section
+
+class ProductDetailInline(admin.TabularInline):  # Use StackedInline if you prefer a different layout
     model = ProductDetail
-    can_delete = False  # Prevents deletion of associated ProductDetail when editing ProductVersion
-    verbose_name_plural = 'Product Details'  # Displayed name for the inline section
+    extra = 1  # Number of empty forms to display
+    # fields = ('detail_type', 'value')
+    # readonly_fields = ('detail_type',)  # Make detail_type readonly if you want
+    can_delete = True  # Allow deletion of product details from the inline form
+    verbose_name_plural = 'Product Details'
 
 
 @admin.register(ProductVersion)
@@ -198,3 +206,10 @@ class TopBrandAdmin(admin.ModelAdmin):
         if obj.image:
             img_str = f"<img src='{obj.image.url}' width='100px'>"
         return format_html(img_str)
+
+
+
+@admin.register(ProductDetailType)
+class ProductDetailTypeAdmin(TranslationAdmin):
+    list_display = ["name"]
+

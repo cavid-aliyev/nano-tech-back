@@ -102,11 +102,6 @@ def get_language_options_api(request):
     return JsonResponse({'languages': languages_info})
 
 
-# @permission_classes([IsAuthenticatedOrReadOnly])
-# class SliderViewSet(viewsets.ModelViewSet):
-#     queryset = Slider.objects.all()
-#     serializer_class = SliderSerializer
-
 @permission_classes([IsAuthenticatedOrReadOnly])
 class TopBrandViewSet(viewsets.ModelViewSet):
     queryset = TopBrand.objects.all()
@@ -150,21 +145,6 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             return categories
         return queryset
 
-
-# @permission_classes([IsAuthenticatedOrReadOnly])
-# class ProductSubcategoryViewSet(viewsets.ModelViewSet):
-#     queryset = ProductSubcategory.objects.all()
-
-#     def get_serializer_class(self):
-#         if self.action == 'list' or self.action == 'retrieve':
-#             return ProductSubcategoryListSerializer
-#         if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
-#             return  ProductSubcategoryCreateSerializer
-#         return ProductSubcategoryListSerializer  # default serializer
-
-# class ProductViewSet(viewsets.ModelViewSet):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
 
 @permission_classes([IsAuthenticatedOrReadOnly])
 class ProductColorViewSet(viewsets.ModelViewSet):
@@ -229,7 +209,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         min_price = self.request.query_params.get('min_price')
         brand_ids = self.request.query_params.get('brand_id')
         category_ids = self.request.query_params.get('category_id')
-        processor = self.request.query_params.get('processor')
+        # processor = self.request.query_params.get('processor')
 
         products = list(queryset)
 
@@ -277,10 +257,10 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
                     filtered_products.append(product)
         
             products = filtered_products
-        if processor:
-            processor_titles = list(map(str, processor.split(',')))
-            # print(processor_titles, "processor_titles------")
-            # products = [product for product in products if product.specifications.processor in processor_titles]
+        # if processor:
+        #     processor_titles = list(map(str, processor.split(',')))
+        #     print(processor_titles, "processor_titles------")
+        #     products = [product for product in products if product.details in processor_titles]
             
         
         return products

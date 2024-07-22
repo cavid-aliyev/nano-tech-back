@@ -186,9 +186,10 @@ class ProductBrandListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+    detail_type = serializers.CharField(source = 'detail_type.name')
     class Meta:
         model = ProductDetail
-        fields = ( 'id', 'processor', 'screen_diagonal', 'video_card', 'ram', 'memory', 'screen_indicators', 'operating_system')
+        fields = ( 'id', 'detail_type', 'value')
 
 
 class ProductCategoryListforProductSerializer(serializers.ModelSerializer):
@@ -217,7 +218,7 @@ class ProductVersionListSerializer(serializers.ModelSerializer):
     category = ProductCategoryListforProductSerializer()
     # special_discount = SpecialDiscountSerializer(source='special_discounts',many=True, read_only=True)
     has_daily_special_discount = serializers.SerializerMethodField()
-    product_details = ProductDetailSerializer(source='specifications', read_only=True)
+    product_details = ProductDetailSerializer(source='details', read_only=True, many=True)
 
     class Meta:
         model = ProductVersion

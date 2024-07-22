@@ -10,18 +10,6 @@ from decimal import Decimal
 from utils import DateAbstractModel
 
 
-# class Slider(DateAbstractModel):
-#     slider_image = ImageField(upload_to='slider_image')
-#     is_active = models.BooleanField(default=True)
-
-#     def __str__(self):
-#         return f"{self.id}'s slider obj"
-
-#     class Meta:
-#         verbose_name = "Slider"
-#         verbose_name_plural = "Sliders"
-#         ordering = ["id"]
-
 
 class Brand(models.Model):
     title = models.CharField(max_length=200)
@@ -36,6 +24,7 @@ class Brand(models.Model):
         verbose_name = "Brand"
         verbose_name_plural = "Brands"
         ordering = ["id"]
+
 
 class TopBrand(DateAbstractModel):
     image = ImageField(upload_to='brand_image', null=True)
@@ -99,31 +88,6 @@ class Category(DateAbstractModel):
                 self.parent_category.brands.add(brand)
             self.parent_category.save()
 
-# class ProductSubcategory(models.Model):
-#     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='subcategories')
-#     title = models.CharField(max_length=100)
-
-#     def __str__(self):
-#         return self.title
-    
-#     class Meta:
-#         verbose_name = "Subcategory"
-#         verbose_name_plural = "Subcategories"
-#         ordering = ["id"]
-    
-
-
-# class Product(models.Model):
-#     brand = models.ForeignKey(Brand, on_delete=models.CASCADE,related_name='product_brand')
-#     title = models.CharField(max_length=200)
-#     subcategory = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE,related_name='product_category')
-#     is_active = models.BooleanField(default=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return self.title
-
 
 class ProductColor(models.Model):
     title = models.CharField(max_length=200)
@@ -170,6 +134,19 @@ class Discount(models.Model):
         verbose_name_plural = "Discounts"
         ordering = ["id"]
 
+
+class ProductDetailType(DateAbstractModel):
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = "Product Detail Type"
+        verbose_name_plural = "Product Detail Types"
+        ordering = ["id"]
+
+    
+    def __str__(self):
+        return self.name
+    
 
 class ProductVersion(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='product_versions')
@@ -229,18 +206,12 @@ class ProductVersion(models.Model):
     
 
 class ProductDetail(DateAbstractModel):
-    product = models.OneToOneField(ProductVersion, related_name='specifications', on_delete=models.CASCADE)
-    processor = models.CharField(max_length=100) 
-    screen_diagonal = models.CharField(max_length=100)
-    video_card = models.CharField(max_length=100)
-    ram = models.CharField(max_length=100)
-    memory = models.CharField(max_length=100)
-    screen_indicators = models.CharField(max_length=100)
-    operating_system = models.CharField(max_length=100)
+    product = models.ForeignKey(ProductVersion, related_name='details', on_delete=models.CASCADE)
+    detail_type = models.ForeignKey(ProductDetailType, on_delete=models.CASCADE)
+    value = models.CharField(max_length=255)
     
-
     def __str__(self):
-        return f"{self.product.title}'s details"
+        return f'{self.product.title} - {self.detail_type.name}: {self.value}'
     
 
     class Meta:
@@ -263,7 +234,6 @@ class SpecialDiscount(DateAbstractModel):
         verbose_name_plural = "Daily Special Discounts"
         ordering = ["-created_at"]
     
-
 
 class ProductVersionImage(models.Model):
     product_version = models.ForeignKey(ProductVersion, on_delete=models.CASCADE,related_name="images")

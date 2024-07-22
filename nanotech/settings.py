@@ -18,9 +18,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv('DEBUG', 'True') == 'True'
-# DEBUG = True
-DEBUG = False if os.environ.get("PROD") == 1 else True
-
+DEBUG = True
+# DEBUG = False if os.environ.get("PROD") == 1 else True
 
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 ALLOWED_HOSTS = ["*"]
