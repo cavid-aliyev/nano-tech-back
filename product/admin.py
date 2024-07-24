@@ -2,7 +2,7 @@ from django.contrib import admin
 from product.models import *
 from modeltranslation.admin import TranslationAdmin
 from django.utils.html import format_html
-
+from django.utils.translation import gettext_lazy as _
 
 
 # admin.site.register(Brand)
@@ -61,19 +61,22 @@ class ProductDetailInline(admin.TabularInline):  # Use StackedInline if you pref
 
 @admin.register(ProductVersion)
 class ProductAdmin(TranslationAdmin):
-    list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand',"category","get_main_cat", 'get_sizes' )
+    # list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand',"category","get_main_cat", 'get_sizes' )
+    list_display = ('id','title', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price' )
     list_filter = ["brand", "size", 'color', "category"]
     list_display_links = ['id', "title", "get_photo"] 
-    list_editable = ['price', "brand",  'discount', "category"]
+    # list_editable = ['price', "brand",  'discount', "category"]
+    list_editable = ['price', 'discount']
     search_fields = ['title', 'description',  'brand__title', 'category__title' ]
-    # fieldsets = (
-    #     ('info', {
-    #         'fields': ('title', 'cover_image',  'description','price', 'slug')
-    #     }),
-    #     ('relations', {
-    #         'fields': ('subcategory', 'brand', 'size','color' ,'tags')
-    #     }),
-    # )
+    fieldsets = (
+        ('info', {
+            'fields': ('title',  'description', 'price','discount','stock','sales', 'display_image', 'cover_image','is_active','is_new', 'slug', 'created_at', "updated_at")
+        }),
+        ('relations', {
+            'fields': ('category', 'brand', 'size','color' ,'tags', )
+        }),
+    )
+    readonly_fields = ('display_image','created_at', "updated_at", 'slug', 'sales')
     inlines = [ImageInline, SpecialDiscountInline, ProductDetailInline]
 
 
@@ -108,6 +111,13 @@ class ProductAdmin(TranslationAdmin):
             img_str = f"<img src='{obj.cover_image.url}' width='100px'>"
         return format_html(img_str)
     get_photo.short_description = 'Cover Image'
+
+    def display_image(self, obj):
+        if obj.cover_image:
+            return format_html('<img src="{}" style="max-width: 300px; max-height: 300px;" />', obj.cover_image.url)
+        return _("No Image Available")
+    display_image.short_description = _('Cover Image')
+    display_image.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         # Check if the category exists for the given brand
