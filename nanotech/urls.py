@@ -39,6 +39,8 @@ schema_view = get_schema_view(
 
 app_name="api"
 urlpatterns = [
+    # path('grappelli/', include('grappelli.urls')),  # grappelli URLS
+    # path('', include('admin_material.urls')),
     path('admin/', admin.site.urls),
     # path('set_language/', set_language_api, name='set_language_api'),
     path('language_options/', get_language_options_api, name='get_language_options_api'),

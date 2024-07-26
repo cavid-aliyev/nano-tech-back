@@ -59,10 +59,18 @@ class ProductDetailInline(admin.TabularInline):  # Use StackedInline if you pref
     verbose_name_plural = 'Product Details'
 
 
+@admin.action(description='Duplicate selected Products')
+def duplicate_products(modeladmin, request, queryset):
+    for product in queryset:
+        product.pk = None  # This will create a new object instead of updating the existing one
+        product.save()
+
+
 @admin.register(ProductVersion)
 class ProductAdmin(TranslationAdmin):
     # list_display = ('title', 'id', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price','brand',"category","get_main_cat", 'get_sizes' )
     list_display = ('id','title', 'get_photo', 'price','discount', 'get_special_discount', 'get_discounted_price' )
+    actions = [duplicate_products]
     list_filter = ["brand", "size", 'color', "category"]
     list_display_links = ['id', "title", "get_photo"] 
     # list_editable = ['price', "brand",  'discount', "category"]
@@ -70,10 +78,10 @@ class ProductAdmin(TranslationAdmin):
     search_fields = ['title', 'description',  'brand__title', 'category__title' ]
     fieldsets = (
         ('info', {
-            'fields': ('title',  'description', 'price','discount','stock','sales', 'display_image', 'cover_image','is_active','is_new', 'slug', 'created_at', "updated_at")
+            'fields': ('title',  'description', 'price','stock','sales', 'display_image', 'cover_image','is_active','is_new', 'slug', 'created_at', "updated_at")
         }),
         ('relations', {
-            'fields': ('category', 'brand', 'size','color' ,'tags', )
+            'fields': ('category', 'brand','discount', 'size','color' ,'tags', )
         }),
     )
     readonly_fields = ('display_image','created_at', "updated_at", 'slug', 'sales')
