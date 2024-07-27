@@ -62,8 +62,36 @@ class ProductDetailInline(admin.TabularInline):  # Use StackedInline if you pref
 @admin.action(description='Duplicate selected Products')
 def duplicate_products(modeladmin, request, queryset):
     for product in queryset:
-        product.pk = None  # This will create a new object instead of updating the existing one
+        # Duplicate the product
+        original_id = product.id
+        product.pk = None
         product.save()
+
+        # Duplicate many-to-many fields
+        product.color.set(ProductVersion.objects.get(id=original_id).color.all())
+        product.size.set(ProductVersion.objects.get(id=original_id).size.all())
+        product.tags.set(ProductVersion.objects.get(id=original_id).tags.all())
+        
+        # Duplicate related ProductDetail
+        details = ProductDetail.objects.filter(product_id=original_id)
+        for detail in details:
+            detail.pk = None
+            detail.product = product
+            detail.save()
+
+        # Duplicate related SpecialDiscount
+        discounts = SpecialDiscount.objects.filter(product_version_id=original_id)
+        for discount in discounts:
+            discount.pk = None
+            discount.product_version = product
+            discount.save()
+
+        # Duplicate related ProductVersionImage
+        images = ProductVersionImage.objects.filter(product_version_id=original_id)
+        for image in images:
+            image.pk = None
+            image.product_version = product
+            image.save()
 
 
 @admin.register(ProductVersion)
@@ -84,7 +112,7 @@ class ProductAdmin(TranslationAdmin):
             'fields': ('category', 'brand','discount', 'size','color' ,'tags', )
         }),
     )
-    readonly_fields = ('display_image','created_at', "updated_at", 'slug', 'sales')
+    readonly_fields = ('display_image','created_at', "updated_at", 'slug',)
     inlines = [ImageInline, SpecialDiscountInline, ProductDetailInline]
 
 
