@@ -8,6 +8,24 @@ User = get_user_model()
 from product.api.serializers import ProductVersionListSerializer, DiscountSerializer,SpecialDiscountSerializer
 
 
+class ProductWishlistStatusSerializer(serializers.ModelSerializer):
+    is_in_wishlist = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductVersion
+        fields = ('id', 'title', 'is_in_wishlist', "user")
+
+    def get_is_in_wishlist(self, obj):
+        user = self.context['request'].user
+        return obj.product_wishlist.filter(user=user).exists()
+    
+    def get_user(self, obj):
+        user = self.context['request'].user
+        return user.email
+
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

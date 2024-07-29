@@ -13,9 +13,27 @@ from drf_spectacular.types import OpenApiTypes
 from checkout.models import WishlistItem, ShoppingCart,CartItem
 from checkout.api.serializers import WishlistItemCreateSerializer, WishlistItemListSerializer
 
-from .serializers import ShoppingCartSerializer,CartItemCreateSerializer,CartItemReadSerializer,CartItemDeleteSerializer
+from .serializers import ShoppingCartSerializer,CartItemCreateSerializer,CartItemReadSerializer,CartItemDeleteSerializer, ProductWishlistStatusSerializer
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from product.models import ProductVersion
+
+
+
+@extend_schema(
+    # request=ProductWishlistStatusSerializer,
+    responses={200: ProductWishlistStatusSerializer, 400: 'Bad Request', 404: 'Not Found'},   
+)
+class ProductWishlistStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, product_id):
+        try:
+            product = ProductVersion.objects.get(id=product_id)
+        except ProductVersion.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=404)
+
+        serializer = ProductWishlistStatusSerializer(product, context={'request': request})
+        return Response(serializer.data)
 
 
 
