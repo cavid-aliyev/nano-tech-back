@@ -3,7 +3,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils.deprecation import MiddlewareMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 class CheckBlacklistedTokenMiddleware(MiddlewareMixin):
     pass

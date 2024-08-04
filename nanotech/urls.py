@@ -23,6 +23,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from product.api.views import set_language_api, get_language_options_api
+# from account.api.views import GoogleLogin
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -49,8 +50,13 @@ urlpatterns = [
 
     path("core-api/", include('home.api.urls')),
     path('account-api/', include('account.api.urls')),
-    # path('api/account/', include('allauth.urls')),
+    # path('account-api/auth/', include('allauth.urls')),
     # path('social-auth/', include('social_django.urls', namespace='social')),
+
+    # path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    # path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    # path('dj-rest-auth/social/', include('allauth.socialaccount.urls')),
+    # path('dj-rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
 
     path("ckeditor/", include("ckeditor_uploader.urls")),
     # path("blog-api/", include("blog.urls.apis")),

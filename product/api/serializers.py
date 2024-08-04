@@ -185,6 +185,13 @@ class ProductBrandListSerializer(serializers.ModelSerializer):
         fields = ['id', "title", 'image']
 
 
+class FilterOptionsSerializer(serializers.Serializer):
+    categories = serializers.ListField(child=serializers.CharField())
+    # brands = serializers.ListField(child=serializers.CharField())
+    # tags = serializers.ListField(child=serializers.CharField())
+    # details = serializers.ListField(child=serializers.CharField())
+
+
 class ProductDetailSerializer(serializers.ModelSerializer):
     detail_type = serializers.CharField(source = 'detail_type.name')
     class Meta:
@@ -266,4 +273,8 @@ class ProductVersionCreateSerializer(serializers.ModelSerializer):
                   'brand', 'category', 
                    'price', 'discount', 'stock', 
                   'cover_image']  
-    
+
+
+class ProductListResponseSerializer(serializers.Serializer):
+    products = ProductVersionListSerializer(many=True)
+    # filters = FilterOptionsSerializer()

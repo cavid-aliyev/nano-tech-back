@@ -14,7 +14,7 @@ from drf_spectacular.types import OpenApiTypes
 from django.db.models import QuerySet
 
 from product.models import (Brand, TopBrand, 
-    ProductTag, Category,
+    ProductTag, Category, ProductDetail, ProductDetailType,
     ProductColor, ProductVersion, ProductVersionImage)
 from .serializers import ( 
     BrandSerializer, ProductTagSerializer, ProductTagCreateSerializer, 
@@ -22,7 +22,7 @@ from .serializers import (
     # ProductSubcategoryListSerializer,ProductSubcategoryCreateSerializer, 
     ProductColorSerializer, ProductColorCreateSerializer,
     ProductVersionListSerializer, ProductVersionCreateSerializer, ProductVersionImageSerializer, 
-    TopBrandSerializer)
+    TopBrandSerializer, FilterOptionsSerializer)
 from product.filters import ProductVersionFilter
 
 @api_view(['POST'])
@@ -292,7 +292,42 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         end = start + page_size
         paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
-        return Response(serializer.data)
+
+        categories = list(Category.objects.filter(product_versions__in=queryset).distinct().values('id', 'title'))
+        brands = list(Brand.objects.filter(product_versions__in=queryset).distinct().values('id', 'title'))
+        tags = list(ProductTag.objects.filter(product_tags__in=queryset).distinct().values('id', 'title'))
+        colors = list(ProductColor.objects.filter(product_verions__in=queryset).distinct().values('id', 'title'))
+        
+        # Fetch and aggregate distinct detail types
+        raw_details = ProductDetail.objects.filter(product__in=queryset).values('detail_type__id', 'detail_type__name')
+        details = []
+        seen = set()
+        for detail in raw_details:
+            detail_type_id = detail['detail_type__id']
+            detail_type_name = detail['detail_type__name']
+            if (detail_type_id, detail_type_name) not in seen:
+                seen.add((detail_type_id, detail_type_name))
+                details.append({
+                    'detail_type__id': detail_type_id,
+                    'detail_type__name': detail_type_name
+                })
+
+        filter_options = {
+            'categories': categories,
+            'brands': brands,
+            'colors': colors,
+            'tags': tags,
+            'details': details,
+        }
+
+        response_data = {
+            'products': serializer.data,
+            'filters': filter_options,
+        }
+
+        # return Response(serializer.data)
+        return Response(response_data)
+    
 
 
 

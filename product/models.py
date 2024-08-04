@@ -151,7 +151,7 @@ class ProductDetailType(DateAbstractModel):
 class ProductVersion(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='product_versions')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='product_versions', null=True, blank=True)
-    color = models.ManyToManyField(ProductColor, blank=True)
+    color = models.ManyToManyField(ProductColor, blank=True, related_name='product_verions')
     size = models.ManyToManyField(ProductSize, blank=True)
     title = models.CharField(max_length=200)
     price = models.DecimalField(decimal_places=2, max_digits=10)
