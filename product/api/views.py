@@ -175,6 +175,7 @@ class ProductColorViewSet(viewsets.ModelViewSet):
             OpenApiParameter(name='page_size', type=OpenApiTypes.INT, required=False, description='Number of items per page'),
             OpenApiParameter(name='brand_id', type=OpenApiTypes.INT, required=False, description='Filter products by brand ID (comma-separated list like brand_id=1,2,3)'),
             OpenApiParameter(name='category_id', type=OpenApiTypes.INT, required=False, description='Filter products by category ID (comma-separated list like category_id=1,2,3)'),
+            OpenApiParameter(name='color_id', type=OpenApiTypes.INT, required=False, description='Filter products by color ID (comma-separated list like color_id=1,2,3)'),
             OpenApiParameter(name='order_by', type=OpenApiTypes.STR, enum=['-price', 'price','newest', 'title'], required=False, description='Order products by price(price: ascending, -price:descending), newest, or title'),
        ]
     )
@@ -209,7 +210,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         min_price = self.request.query_params.get('min_price')
         brand_ids = self.request.query_params.get('brand_id')
         category_ids = self.request.query_params.get('category_id')
-        # processor = self.request.query_params.get('processor')
+        color_ids = self.request.query_params.get('color_id')
 
         products = list(queryset)
 
@@ -257,10 +258,9 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
                     filtered_products.append(product)
         
             products = filtered_products
-        # if processor:
-        #     processor_titles = list(map(str, processor.split(',')))
-        #     print(processor_titles, "processor_titles------")
-        #     products = [product for product in products if product.details in processor_titles]
+        if color_ids:
+            color_ids = list(map(int, color_ids.split(',')))
+            products = [product for product in products if product.color.filter(id__in=color_ids).exists()]
             
         
         return products
@@ -285,6 +285,38 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         return Response(response_data)
 
     def list(self, request, *args, **kwargs):
+        # Fetch all products for filter data
+        all_products_queryset = ProductVersion.objects.all()
+
+        # Get distinct filter options from the full queryset
+        categories = list(Category.objects.filter(product_versions__in=all_products_queryset).distinct().values('id', 'title'))
+        brands = list(Brand.objects.filter(product_versions__in=all_products_queryset).distinct().values('id', 'title'))
+        # tags = list(ProductTag.objects.filter(product_tags__in=all_products_queryset).distinct().values('id', 'title'))
+        colors = list(ProductColor.objects.filter(product_verions__in=all_products_queryset).distinct().values('id', 'title'))
+        
+        # # Fetch and aggregate distinct detail types
+        # raw_details = ProductDetail.objects.filter(product__in=all_products_queryset).values('detail_type__id', 'detail_type__name')
+        # details = []
+        # seen = set()
+        # for detail in raw_details:
+        #     detail_type_id = detail['detail_type__id']
+        #     detail_type_name = detail['detail_type__name']
+        #     if (detail_type_id, detail_type_name) not in seen:
+        #         seen.add((detail_type_id, detail_type_name))
+        #         details.append({
+        #             'detail_type__id': detail_type_id,
+        #             'detail_type__name': detail_type_name
+        #         })
+
+        filter_options = {
+            'categories': categories,
+            'brands': brands,
+            'colors': colors,
+            # 'tags': tags,
+            # 'details': details,
+        }
+        
+        # Get paginated products
         queryset = self.get_queryset()
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 12))
@@ -292,33 +324,6 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         end = start + page_size
         paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
-
-        categories = list(Category.objects.filter(product_versions__in=queryset).distinct().values('id', 'title'))
-        brands = list(Brand.objects.filter(product_versions__in=queryset).distinct().values('id', 'title'))
-        tags = list(ProductTag.objects.filter(product_tags__in=queryset).distinct().values('id', 'title'))
-        colors = list(ProductColor.objects.filter(product_verions__in=queryset).distinct().values('id', 'title'))
-        
-        # Fetch and aggregate distinct detail types
-        raw_details = ProductDetail.objects.filter(product__in=queryset).values('detail_type__id', 'detail_type__name')
-        details = []
-        seen = set()
-        for detail in raw_details:
-            detail_type_id = detail['detail_type__id']
-            detail_type_name = detail['detail_type__name']
-            if (detail_type_id, detail_type_name) not in seen:
-                seen.add((detail_type_id, detail_type_name))
-                details.append({
-                    'detail_type__id': detail_type_id,
-                    'detail_type__name': detail_type_name
-                })
-
-        filter_options = {
-            'categories': categories,
-            'brands': brands,
-            'colors': colors,
-            'tags': tags,
-            'details': details,
-        }
 
         response_data = {
             'products': serializer.data,
