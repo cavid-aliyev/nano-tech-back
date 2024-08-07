@@ -318,6 +318,7 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         
         # Get paginated products
         queryset = self.get_queryset()
+        total_count = len(queryset)
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 12))
         start = (page - 1) * page_size
@@ -325,9 +326,28 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
         paginated_queryset = queryset[start:end]
         serializer = self.get_serializer(paginated_queryset, many=True)
 
+        # Calculate pagination metadata
+        page_count = (total_count + page_size - 1) // page_size  # Total pages
+        has_next = page < page_count
+        has_previous = page > 1
+
+        pagination_data = {
+            'count': total_count,
+            'page_count': page_count,
+            'current_page': page,
+            'page_size': page_size,
+            'next': page + 1 if has_next else None,
+            'previous': page - 1 if has_previous else None,
+            'has_next': has_next,
+            'has_previous': has_previous,
+            'start_index': start + 1,
+            'end_index': min(end, total_count),
+        }
+
         response_data = {
             'products': serializer.data,
             'filters': filter_options,
+            'pagination': pagination_data,
         }
 
         # return Response(serializer.data)
