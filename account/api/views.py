@@ -13,6 +13,8 @@ from django.contrib.auth.tokens import default_token_generator as token_generato
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from checkout.models import ShoppingCart
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+
 
 User = get_user_model()
 
@@ -89,6 +91,18 @@ class PasswordResetConfirmView(APIView):
         serializer.save()
         return Response({"detail": "Password reset successfully"}, status=status.HTTP_200_OK)
 
+
+@extend_schema_view(
+    post=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='refresh', 
+                required=True, 
+                description="Send refresh token with 'refresh' and send access token in Authorization header"
+            ),
+        ]
+    )
+)
 class LogoutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -97,6 +111,9 @@ class LogoutView(APIView):
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response(status=204)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except KeyError:
+            return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(status=400)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
